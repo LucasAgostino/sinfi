@@ -31,7 +31,9 @@ interface Product {
   waitTimeMinutes: number;
   isOutOfStock?: boolean;
   flavorOptions?: string[];
+  variantOptions?: { name: string; price: number }[];
   selectedFlavor?: string;
+  quantityToAdd?: number;
   cartKey?: string;
 }
 
@@ -51,6 +53,7 @@ export default function App() {
 
   const handleAddToCart = (product: Product) => {
     setCart((prevCart) => {
+      const quantityToAdd = product.quantityToAdd ?? 1;
       const itemKey = product.cartKey ?? String(product.id);
       const existingItem = prevCart.find(
         (item) => (item.cartKey ?? String(item.id)) === itemKey,
@@ -61,7 +64,7 @@ export default function App() {
 
       if (existingItem) {
         toast.success(`${productLabel} agregado al carrito`, {
-          description: `Cantidad: ${existingItem.quantity + 1}`,
+          description: `Cantidad: ${existingItem.quantity + quantityToAdd}`,
           duration: 2000,
           action: {
             label: 'Ver carrito',
@@ -70,20 +73,20 @@ export default function App() {
         });
         return prevCart.map((item) =>
           (item.cartKey ?? String(item.id)) === itemKey
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: item.quantity + quantityToAdd }
             : item,
         );
       }
 
       toast.success(`${productLabel} agregado al carrito`, {
-        description: 'Cantidad: 1',
+        description: `Cantidad: ${quantityToAdd}`,
         duration: 2000,
         action: {
           label: 'Ver carrito',
           onClick: () => setCurrentScreen('cart'),
         },
       });
-      return [...prevCart, { ...product, quantity: 1 }];
+      return [...prevCart, { ...product, quantity: quantityToAdd }];
     });
   };
 

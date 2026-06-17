@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ChevronDown, ChevronUp, Croissant, LogOut, MapPin, Plus, SlidersHorizontal } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronUp, Croissant, LogOut, MapPin, Minus, Plus, SlidersHorizontal, Trash2 } from 'lucide-react';
 import starbucksLogo from '../../assets/starbucks-logo.png';
 
 const rusticaLogo = `data:image/svg+xml;utf8,${encodeURIComponent(`
@@ -58,7 +58,9 @@ interface Product {
   waitTimeMinutes: number;
   isOutOfStock?: boolean;
   flavorOptions?: string[];
+  variantOptions?: { name: string; price: number }[];
   selectedFlavor?: string;
+  quantityToAdd?: number;
   cartKey?: string;
 }
 
@@ -72,41 +74,40 @@ interface HomeProps {
 
 const PRODUCTS: Product[] = [
   { id: 1, name: 'Agua con gas/Agua Saborizada', venue: 'La Cantina', description: 'Bebida disponible en La Cantina.', price: 2900, category: 'Bebidas', image: '💧', imageUrl: '/assets/beverages/agua-con-gas.png', waitTimeMinutes: 1 },
-  { id: 2, name: 'Arabe/Pebete/Bagel de J y Q', venue: 'La Cantina', description: 'Sándwich disponible en La Cantina.', price: 10129, category: 'Sandwiches', image: '🥯', imageUrl: 'https://images.unsplash.com/photo-1528736235302-52922df5c122?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 7 },
-  { id: 3, name: 'Baguette Caprese', venue: 'La Cantina', description: 'Sándwich disponible en La Cantina.', price: 8296, category: 'Sandwiches', image: '🥖', imageUrl: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 8 },
-  { id: 4, name: 'Baguette de jamon y queso', venue: 'La Cantina', description: 'Sándwich disponible en La Cantina.', price: 8296, category: 'Sandwiches', image: '🥖', imageUrl: 'https://images.unsplash.com/photo-1528736235302-52922df5c122?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 8 },
-  { id: 5, name: 'Baguettes Crudo/Salame', venue: 'La Cantina', description: 'Sándwich disponible en La Cantina.', price: 9952, category: 'Sandwiches', image: '🥖', imageUrl: 'https://images.unsplash.com/photo-1550507992-eb63ffee0847?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 9 },
-  { id: 6, name: 'Baguettes pollo queso y tomate', venue: 'La Cantina', description: 'Sándwich disponible en La Cantina.', price: 9952, category: 'Sandwiches', image: '🥖', imageUrl: 'https://images.unsplash.com/photo-1608039755401-742074f0548d?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 9 },
-  { id: 7, name: 'Brownie/Budin/Alfajor', venue: 'La Cantina', description: 'Pastelería disponible en La Cantina.', price: 5803, category: 'Pastelería', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1590841609987-4ac211afdde1?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 2 },
-  { id: 8, name: 'Café Grande', venue: 'La Cantina', description: 'Café disponible en La Cantina.', price: 6157, category: 'Cafés', image: '☕', imageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 4 },
-  { id: 9, name: 'Café Chico', venue: 'La Cantina', description: 'Café disponible en La Cantina.', price: 2925, category: 'Cafés', image: '☕', imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 3 },
+  { id: 2, name: 'Arabe/Pebete/Bagel de J y Q', venue: 'La Cantina', description: 'Elegí el tipo de pan antes de agregar el sándwich.', price: 10129, category: 'Sandwiches', image: '🥯', imageUrl: '/assets/Cantina/Sandwiches/pebeteJyQ.jpg', waitTimeMinutes: 7, flavorOptions: ['Árabe', 'Pebete', 'Bagel'] },
+  { id: 3, name: 'Baguette Caprese', venue: 'La Cantina', description: 'Sándwich disponible en La Cantina.', price: 8296, category: 'Sandwiches', image: '🥖', imageUrl: '/assets/Cantina/Sandwiches/baguette%20Caprese.jpeg', waitTimeMinutes: 8 },
+  { id: 4, name: 'Baguette de jamon y queso', venue: 'La Cantina', description: 'Sándwich disponible en La Cantina.', price: 8296, category: 'Sandwiches', image: '🥖', imageUrl: '/assets/Cantina/Sandwiches/baguette%20jamon%20y%20queso.jpeg', waitTimeMinutes: 8 },
+  { id: 5, name: 'Baguettes Crudo/Salame', venue: 'La Cantina', description: 'Elegí crudo o salame antes de agregar el sándwich.', price: 9952, category: 'Sandwiches', image: '🥖', imageUrl: '/assets/Cantina/Sandwiches/sandwich%20salame.webp', waitTimeMinutes: 9, flavorOptions: ['Crudo', 'Salame'] },
+  { id: 6, name: 'Baguettes pollo queso y tomate', venue: 'La Cantina', description: 'Sándwich disponible en La Cantina.', price: 9952, category: 'Sandwiches', image: '🥖', imageUrl: '/assets/Cantina/Sandwiches/Baguette-Pollo-Queso-y-Tomate.jpg', waitTimeMinutes: 9 },
+  { id: 7, name: 'Brownie/Budin/Alfajor', venue: 'La Cantina', description: 'Elegí brownie, budín o alfajor antes de agregarlo.', price: 5803, category: 'Pastelería', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1590841609987-4ac211afdde1?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 2, flavorOptions: ['Brownie', 'Budín', 'Alfajor'] },
+  { id: 8, name: 'Café Grande', venue: 'La Cantina', description: 'Café disponible en La Cantina.', price: 6157, category: 'Cafés', image: '☕', imageUrl: '/assets/Cantina/cafe/cafe%20grande.avif', waitTimeMinutes: 4 },
+  { id: 9, name: 'Café Chico', venue: 'La Cantina', description: 'Café disponible en La Cantina.', price: 2925, category: 'Cafés', image: '☕', imageUrl: '/assets/Cantina/cafe/cafe%20chico.webp', waitTimeMinutes: 3 },
   { id: 10, name: 'Citric', venue: 'La Cantina', description: 'Elegí el gusto antes de agregar la bebida.', price: 5787, category: 'Bebidas', image: '🧃', imageUrl: '/assets/beverages/citric.png', waitTimeMinutes: 1, flavorOptions: ['Naranja', 'Naranja + frutilla'] },
   { id: 11, name: 'Coca Cola 500cc', venue: 'La Cantina', description: 'Elegí el sabor antes de agregar la bebida.', price: 3183, category: 'Bebidas', image: '🥤', imageUrl: '/assets/beverages/coca-cola-500cc.png', waitTimeMinutes: 1, flavorOptions: ['Sabor original', 'Zero'] },
   { id: 12, name: 'Coca Cola Lata', venue: 'La Cantina', description: 'Bebida disponible en La Cantina.', price: 2749, category: 'Bebidas', image: '🥤', imageUrl: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
   { id: 13, name: 'Cookie', venue: 'La Cantina', description: 'Pastelería disponible en La Cantina.', price: 5803, category: 'Pastelería', image: '🍪', imageUrl: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
   { id: 14, name: 'Gatorade', venue: 'La Cantina', description: 'Elegí el gusto antes de agregar la bebida.', price: 4630, category: 'Bebidas', image: '🥤', imageUrl: '/assets/beverages/gatorade.png', waitTimeMinutes: 1, flavorOptions: ['Manzana', 'Cool Blue', 'Frutas tropicales'] },
-  { id: 15, name: 'Medialunas rellenas', venue: 'La Cantina', description: 'Panadería disponible en La Cantina.', price: 3714, category: 'Panadería', image: '🥐', imageUrl: 'https://images.unsplash.com/photo-1623334044303-241021148842?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 3 },
-  { id: 16, name: 'Medialunas simples', venue: 'La Cantina', description: 'Panadería disponible en La Cantina.', price: 1661, category: 'Panadería', image: '🥐', imageUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 2 },
+  { id: 15, name: 'Medialunas rellenas', venue: 'La Cantina', description: 'Panadería disponible en La Cantina.', price: 3714, category: 'Panadería', image: '🥐', imageUrl: '/assets/Cantina/panaderia/medialuna%20rellena.webp', waitTimeMinutes: 3 },
+  { id: 16, name: 'Medialunas simples', venue: 'La Cantina', description: 'Panadería disponible en La Cantina.', price: 1661, category: 'Panadería', image: '🥐', imageUrl: '/assets/Cantina/panaderia/medialuna.webp', waitTimeMinutes: 2 },
   { id: 17, name: 'Pepsi 500cc', venue: 'La Cantina', description: 'Bebida disponible en La Cantina.', price: 2900, category: 'Bebidas', image: '🥤', imageUrl: 'https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
   { id: 18, name: 'Pepsi Lata', venue: 'La Cantina', description: 'Bebida disponible en La Cantina.', price: 2460, category: 'Bebidas', image: '🥤', imageUrl: 'https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
-  { id: 19, name: 'Scon de queso grande', venue: 'La Cantina', description: 'Panadería disponible en La Cantina.', price: 2894, category: 'Panadería', image: '🧀', imageUrl: 'https://images.unsplash.com/photo-1608198093002-ad4e005484ec?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 2 },
-  { id: 20, name: 'Té', venue: 'La Cantina', description: 'Infusión disponible en La Cantina.', price: 3183, category: 'Infusiones', image: '🍵', imageUrl: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 3 },
-  { id: 21, name: 'Yogurisimo/Ser cereales', venue: 'La Cantina', description: 'Lácteo disponible en La Cantina.', price: 7091, category: 'Lácteos', image: '🥣', imageUrl: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
-  { id: 22, name: 'Sandwich de milanesa', venue: 'La Cantina', description: 'Sándwich disponible en La Cantina.', price: 13270, category: 'Sandwiches', image: '🥪', imageUrl: 'https://images.unsplash.com/photo-1553909489-cd47e0907980?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 10 },
-  { id: 23, name: 'Empanadas', venue: 'La Cantina', description: 'Producto disponible en La Cantina.', price: 3159, category: 'Empanadas', image: '🥟', imageUrl: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 6 },
-  { id: 24, name: 'Yogurt "La Cantina"', venue: 'La Cantina', description: 'Lácteo disponible en La Cantina.', price: 8296, category: 'Lácteos', image: '🥣', imageUrl: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
+  { id: 19, name: 'Scon de queso grande', venue: 'La Cantina', description: 'Panadería disponible en La Cantina.', price: 2894, category: 'Panadería', image: '🧀', imageUrl: '/assets/Cantina/panaderia/scon%20queso%20grande.jpeg', waitTimeMinutes: 2 },
+  { id: 20, name: 'Té', venue: 'La Cantina', description: 'Infusión disponible en La Cantina.', price: 3183, category: 'Infusiones', image: '🍵', imageUrl: '/assets/Cantina/infusiones/te.jpeg', waitTimeMinutes: 3 },
+  { id: 21, name: 'Yogurisimo/Ser cereales', venue: 'La Cantina', description: 'Elegí Yogurisimo o Ser cereales antes de agregarlo.', price: 7091, category: 'Lácteos', image: '🥣', imageUrl: '/assets/Cantina/lacteos/yogurt%20yogurisimo.jpg', waitTimeMinutes: 1, flavorOptions: ['Yogurisimo', 'Ser cereales'] },
+  { id: 22, name: 'Sandwich de milanesa', venue: 'La Cantina', description: 'Sándwich disponible en La Cantina.', price: 13270, category: 'Sandwiches', image: '🥪', imageUrl: '/assets/Cantina/Sandwiches/sandwich%20milanesa.jpg', waitTimeMinutes: 10 },
+  { id: 23, name: 'Empanadas', venue: 'La Cantina', description: 'Elegí el gusto antes de agregar las empanadas.', price: 3159, category: 'Empanadas', image: '🥟', imageUrl: '/assets/Cantina/empanadas/empanadas.webp', waitTimeMinutes: 6, flavorOptions: ['Carne', 'Pollo', 'Jamón y queso', 'Humita'] },
+  { id: 24, name: 'Yogurt "La Cantina"', venue: 'La Cantina', description: 'Lácteo disponible en La Cantina.', price: 8296, category: 'Lácteos', image: '🥣', imageUrl: '/assets/Cantina/lacteos/yogurt%20la%20cantina.webp', waitTimeMinutes: 1 },
   { id: 25, name: 'Fruta', venue: 'La Cantina', description: 'Producto disponible en La Cantina.', price: 1580, category: 'Frutas', image: '🍎', imageUrl: 'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
-  { id: 26, name: 'Alf. Capitan simple', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 2363, category: 'Alfajores', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
-  { id: 27, name: 'Alfajor Capitan x3', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 2953, category: 'Alfajores', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
-  { id: 28, name: 'Alfajor Chocoarroz', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 1477, category: 'Alfajores', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
-  { id: 29, name: 'Alfajor cordobes', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 2605, category: 'Alfajores', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
-  { id: 30, name: 'Alfajor Guaymallén', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 591, category: 'Alfajores', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
-  { id: 31, name: 'Alfajor Guaymallén triple', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 886, category: 'Alfajores', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
-  { id: 32, name: 'Alfajor Jorgelin triple', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 2079, category: 'Alfajores', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
-  { id: 33, name: 'Alfajor Jorgito simple', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 1455, category: 'Alfajores', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
-  { id: 34, name: 'Alfajor Shot simple', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 1477, category: 'Alfajores', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
-  { id: 35, name: 'Alfajor terrabusi simple', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 1447, category: 'Alfajores', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
-  { id: 36, name: 'Alfajor triples', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 2215, category: 'Alfajores', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
+  { id: 26, name: 'Alf. Capitan simple', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 2363, category: 'Alfajores', image: '🍫', imageUrl: '/assets/Cantina/alfajores/alfajor%20capitan%20del%20espacio%20simple.webp', waitTimeMinutes: 1 },
+  { id: 27, name: 'Alfajor Capitan x3', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 2953, category: 'Alfajores', image: '🍫', imageUrl: '/assets/Cantina/alfajores/capitan%20del%20espacio%20x3.webp', waitTimeMinutes: 1 },
+  { id: 28, name: 'Alfajor Chocoarroz', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 1477, category: 'Alfajores', image: '🍫', imageUrl: '/assets/Cantina/alfajores/chocoarroz.webp', waitTimeMinutes: 1 },
+  { id: 29, name: 'Alfajor cordobes', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 2605, category: 'Alfajores', image: '🍫', imageUrl: '/assets/Cantina/alfajores/cordobes.jpg', waitTimeMinutes: 1 },
+  { id: 30, name: 'Alfajor Guaymallén', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 591, category: 'Alfajores', image: '🍫', imageUrl: '/assets/Cantina/alfajores/guaymallen.jpg', waitTimeMinutes: 1 },
+  { id: 31, name: 'Alfajor Guaymallén triple', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 886, category: 'Alfajores', image: '🍫', imageUrl: '/assets/Cantina/alfajores/guaymallen%20triple.webp', waitTimeMinutes: 1 },
+  { id: 32, name: 'Alfajor Jorgelin triple', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 2079, category: 'Alfajores', image: '🍫', imageUrl: '/assets/Cantina/alfajores/jorgelin.jpg', waitTimeMinutes: 1 },
+  { id: 33, name: 'Alfajor Jorgito simple', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 1455, category: 'Alfajores', image: '🍫', imageUrl: '/assets/Cantina/alfajores/jorgito.jpg', waitTimeMinutes: 1 },
+  { id: 34, name: 'Alfajor Shot simple', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 1477, category: 'Alfajores', image: '🍫', imageUrl: '/assets/Cantina/alfajores/chocolate.jpg', waitTimeMinutes: 1 },
+  { id: 35, name: 'Alfajor terrabusi simple', venue: 'La Cantina', description: 'Alfajor disponible en La Cantina.', price: 1447, category: 'Alfajores', image: '🍫', imageUrl: '/assets/Cantina/alfajores/terrabusi.jpeg', waitTimeMinutes: 1 },
   { id: 37, name: 'Bonobon', venue: 'La Cantina', description: 'Golosina disponible en La Cantina.', price: 579, category: 'Golosinas', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
   { id: 38, name: 'Cadbury 25G', venue: 'La Cantina', description: 'Chocolate disponible en La Cantina.', price: 3300, category: 'Chocolates', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
   { id: 39, name: 'Cadbury 82G', venue: 'La Cantina', description: 'Chocolate disponible en La Cantina.', price: 5196, category: 'Chocolates', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
@@ -243,7 +244,7 @@ const PRODUCTS: Product[] = [
   { id: 172, name: 'Barra Chocolate & Avena', venue: 'Starbucks', description: 'Barra snack de chocolate y avena.', price: 3400, category: 'Snacks', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1517093157656-b9eccef91cb1?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
   { id: 173, name: 'Barra Proteica Integra', venue: 'Starbucks', description: 'Barra proteica.', price: 3400, category: 'Snacks', image: '🥜', imageUrl: 'https://images.unsplash.com/photo-1517093157656-b9eccef91cb1?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
   { id: 174, name: 'Fitbeans con Sal Marina', venue: 'Starbucks', description: 'Snack crocante con sal marina.', price: 2700, category: 'Snacks', image: '🥜', imageUrl: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
-  { id: 201, name: 'Alfajor de Chocolate', venue: 'La Cantina', description: 'Alfajor relleno de dulce de leche con baño de chocolate.', price: 1500, category: 'Alfajores', image: '🍫', imageUrl: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
+  { id: 201, name: 'Alfajor de Chocolate', venue: 'La Cantina', description: 'Alfajor relleno de dulce de leche con baño de chocolate.', price: 1500, category: 'Alfajores', image: '🍫', imageUrl: '/assets/Cantina/alfajores/chocolate.jpg', waitTimeMinutes: 1 },
   { id: 202, name: 'Papas Fritas', venue: 'La Cantina', description: 'Elegí cómo las querés antes de agregar el pedido.', price: 1300, category: 'Snacks', image: '🍟', imageUrl: '/assets/snacks/papas-fritas.png', waitTimeMinutes: 1, flavorOptions: ['Sin nada', 'Con cheddar', 'Con cheddar y panceta'] },
   { id: 203, name: 'Gomitas', venue: 'La Cantina', description: 'Bolsa de gomitas surtidas frutales.', price: 1200, category: 'Dulces', image: '🍬', imageUrl: 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 1 },
   { id: 204, name: 'Sándwich de Jamón y Queso', venue: 'La Cantina', description: 'Sándwich frío listo para llevar.', price: 2600, category: 'Sándwiches', image: '🥪', imageUrl: 'https://images.unsplash.com/photo-1528736235302-52922df5c122?auto=format&fit=crop&w=240&h=240&q=80', waitTimeMinutes: 4 },
@@ -460,7 +461,10 @@ export function Home({ userName, onAddToCart, searchQuery, onSearchChange, onLog
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
   const [selectedVenueLocations, setSelectedVenueLocations] = useState<string | null>(null);
   const [featuredShuffleTick, setFeaturedShuffleTick] = useState(0);
-  const [selectedFlavor, setSelectedFlavor] = useState<string | null>(null);
+  const [selectedFlavorQuantities, setSelectedFlavorQuantities] = useState<Record<string, number>>({});
+  const selectedFlavors = Object.entries(selectedFlavorQuantities)
+    .filter(([, quantity]) => quantity > 0)
+    .map(([flavor]) => flavor);
 
   const venueProducts = PRODUCTS.filter((product) => product.venue === selectedVenue);
   const featuredProductsByVenue = venues.map((venue) => {
@@ -552,23 +556,76 @@ export function Home({ userName, onAddToCart, searchQuery, onSearchChange, onLog
   const hasMoreProducts = availableProducts.length > visibleAvailableProducts.length;
 
   useEffect(() => {
-    setSelectedFlavor(null);
+    setSelectedFlavorQuantities({});
   }, [selectedProduct]);
 
-  const buildProductSelection = (product: Product) => {
-    if (!product.flavorOptions?.length) {
-      return product;
+  const getProductSelectionOptions = (product: Product) => {
+    if (product.variantOptions?.length) {
+      return product.variantOptions;
     }
 
-    if (!selectedFlavor) {
-      return null;
+    return product.flavorOptions?.map((name) => ({ name })) ?? [];
+  };
+
+  const toggleSelectedFlavor = (flavor: string) => {
+    setSelectedFlavorQuantities((currentQuantities) => {
+      if (currentQuantities[flavor]) {
+        const { [flavor]: _removedFlavor, ...nextQuantities } = currentQuantities;
+        return nextQuantities;
+      }
+
+      return {
+        ...currentQuantities,
+        [flavor]: 1,
+      };
+    });
+  };
+
+  const updateSelectedFlavorQuantity = (flavor: string, delta: number) => {
+    setSelectedFlavorQuantities((currentQuantities) => {
+      const nextQuantity = (currentQuantities[flavor] ?? 0) + delta;
+
+      if (nextQuantity <= 0) {
+        const { [flavor]: _removedFlavor, ...nextQuantities } = currentQuantities;
+        return nextQuantities;
+      }
+
+      return {
+        ...currentQuantities,
+        [flavor]: nextQuantity,
+      };
+    });
+  };
+
+  const removeSelectedFlavor = (flavor: string) => {
+    setSelectedFlavorQuantities((currentQuantities) => {
+      const { [flavor]: _removedFlavor, ...nextQuantities } = currentQuantities;
+      return nextQuantities;
+    });
+  };
+
+  const buildProductSelections = (product: Product) => {
+    const selectionOptions = getProductSelectionOptions(product);
+
+    if (!selectionOptions.length) {
+      return [product];
     }
 
-    return {
-      ...product,
-      selectedFlavor,
-      cartKey: `${product.id}:${selectedFlavor}`,
-    };
+    if (!selectedFlavors.length) {
+      return [];
+    }
+
+    return selectedFlavors.map((selectedFlavor) => {
+      const selectedOption = selectionOptions.find((option) => option.name === selectedFlavor);
+
+      return {
+        ...product,
+        price: selectedOption?.price ?? product.price,
+        selectedFlavor,
+        quantityToAdd: selectedFlavorQuantities[selectedFlavor] ?? 1,
+        cartKey: `${product.id}:${selectedFlavor}`,
+      };
+    });
   };
 
   const renderProductCard = (product: Product) => (
@@ -634,7 +691,7 @@ export function Home({ userName, onAddToCart, searchQuery, onSearchChange, onLog
         onClick={(event) => {
           event.stopPropagation();
           if (!product.isOutOfStock) {
-            if (product.flavorOptions?.length) {
+            if (getProductSelectionOptions(product).length) {
               setSelectedProduct(product);
               return;
             }
@@ -655,8 +712,20 @@ export function Home({ userName, onAddToCart, searchQuery, onSearchChange, onLog
   );
 
   if (selectedProduct) {
-    const requiresFlavorSelection = Boolean(selectedProduct.flavorOptions?.length);
-    const selectedProductForCart = buildProductSelection(selectedProduct);
+    const selectionOptions = getProductSelectionOptions(selectedProduct);
+    const requiresFlavorSelection = Boolean(selectionOptions.length);
+    const selectedProductSelectionsForCart = buildProductSelections(selectedProduct);
+	    const displayedProductPrice =
+	      requiresFlavorSelection && selectedProductSelectionsForCart.length
+	        ? selectedProductSelectionsForCart.reduce(
+	            (total, product) => total + product.price * (product.quantityToAdd ?? 1),
+	            0,
+	          )
+	        : selectedProduct.price;
+	    const selectedProductQuantityToAdd = selectedProductSelectionsForCart.reduce(
+	      (total, product) => total + (product.quantityToAdd ?? 1),
+	      0,
+	    );
 
     return (
       <div className="min-h-screen bg-amber-50 flex flex-col">
@@ -676,12 +745,12 @@ export function Home({ userName, onAddToCart, searchQuery, onSearchChange, onLog
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-6 pb-32 space-y-4">
           <div className="space-y-1">
             <div className="flex items-start justify-between gap-4">
               <h2 className="text-2xl font-extrabold text-gray-900">{selectedProduct.name}</h2>
               <span className={`shrink-0 text-xl font-extrabold ${selectedProduct.isOutOfStock ? 'text-gray-500' : 'text-yellow-900'}`}>
-                {formatPrice(selectedProduct.price)}
+                {formatPrice(displayedProductPrice)}
               </span>
             </div>
             <p className="text-sm font-bold uppercase tracking-[0.14em] text-gray-400">{selectedProduct.category}</p>
@@ -693,32 +762,77 @@ export function Home({ userName, onAddToCart, searchQuery, onSearchChange, onLog
             <div className="rounded-2xl border-2 border-amber-100 bg-white p-4 shadow-sm">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm font-bold uppercase tracking-[0.14em] text-gray-500">Gusto</p>
-                  <p className="mt-1 text-sm font-medium text-gray-600">Elegí una opción para continuar.</p>
+                  <p className="text-sm font-bold uppercase tracking-[0.14em] text-gray-500">Opción</p>
+                  <p className="mt-1 text-sm font-medium text-gray-600">Elegí una o más opciones para continuar.</p>
                 </div>
                 <span className="rounded-full bg-red-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-red-700">
                   Obligatorio
                 </span>
               </div>
 
-              <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {selectedProduct.flavorOptions?.map((flavor) => (
-                  <button
-                    key={flavor}
-                    type="button"
-                    onClick={() => setSelectedFlavor(flavor)}
-                    className={`rounded-xl border-2 px-4 py-3 text-left text-sm font-bold transition-colors ${
-                      selectedFlavor === flavor
-                        ? 'border-yellow-800 bg-amber-100 text-yellow-950'
-                        : 'border-amber-200 bg-white text-gray-700 hover:border-amber-300 hover:bg-amber-50'
-                    }`}
-                  >
-                    {flavor}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+	              <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+	                {selectionOptions.map((option) => {
+	                  const selectedQuantity = selectedFlavorQuantities[option.name] ?? 0;
+
+	                  return (
+	                    <div
+	                      key={option.name}
+	                      className={`rounded-xl border-2 px-4 py-3 text-sm font-bold transition-colors ${
+	                        selectedQuantity > 0
+	                          ? 'border-yellow-800 bg-amber-100 text-yellow-950'
+	                          : 'border-amber-200 bg-white text-gray-700 hover:border-amber-300 hover:bg-amber-50'
+	                      }`}
+	                    >
+	                      <button
+	                        type="button"
+	                        onClick={() => toggleSelectedFlavor(option.name)}
+	                        className="flex w-full items-center justify-between gap-3 text-left"
+	                      >
+	                        <span>{option.name}</span>
+	                        {option.price !== undefined && (
+	                          <span className="shrink-0 text-yellow-900">{formatPrice(option.price)}</span>
+	                        )}
+	                      </button>
+
+	                      {selectedQuantity > 0 && (
+	                        <div className="mt-3 flex items-center justify-between rounded-full bg-white/80 p-1 ring-1 ring-amber-200">
+	                          <div className="flex items-center gap-1">
+	                            <button
+	                              type="button"
+	                              onClick={() => removeSelectedFlavor(option.name)}
+	                              className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-red-500 shadow-sm ring-1 ring-red-100 transition-colors hover:bg-red-50"
+	                              aria-label={`Eliminar ${option.name}`}
+	                            >
+	                              <Trash2 className="h-4 w-4" />
+	                            </button>
+	                            <button
+	                              type="button"
+	                              onClick={() => updateSelectedFlavorQuantity(option.name, -1)}
+	                              className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-900 shadow-sm ring-1 ring-amber-200 transition-colors hover:bg-yellow-800 hover:text-white"
+	                              aria-label={`Restar ${option.name}`}
+	                            >
+	                              <Minus className="h-4 w-4" />
+	                            </button>
+	                          </div>
+	                          <span className="min-w-8 text-center text-base font-extrabold text-yellow-950">
+	                            {selectedQuantity}
+	                          </span>
+	                          <button
+	                            type="button"
+	                            onClick={() => updateSelectedFlavorQuantity(option.name, 1)}
+	                            className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-900 shadow-sm ring-1 ring-amber-200 transition-colors hover:bg-yellow-800 hover:text-white"
+	                            aria-label={`Sumar ${option.name}`}
+	                          >
+	                            <Plus className="h-4 w-4" />
+	                          </button>
+	                        </div>
+	                      )}
+	                    </div>
+	                  );
+	                })}
+	              </div>
+	            </div>
+	          )}
 
           <div className="rounded-2xl border-2 border-amber-100 bg-white p-4 space-y-2 shadow-sm">
             <p className="text-sm font-bold text-gray-500 uppercase tracking-[0.14em]">Retiro</p>
@@ -738,29 +852,31 @@ export function Home({ userName, onAddToCart, searchQuery, onSearchChange, onLog
               </>
             )}
           </div>
-        </div>
-
-        <div className="sticky bottom-0 bg-white border-t-2 border-amber-100 p-6 shadow-lg">
-          <button
-            type="button"
-            onClick={() => {
-              if (!selectedProduct.isOutOfStock && selectedProductForCart) {
-                onAddToCart(selectedProductForCart);
-              }
-            }}
-            disabled={selectedProduct.isOutOfStock || !selectedProductForCart}
-            className={`w-full py-4 rounded-2xl font-bold shadow-md transition-colors ${
-              selectedProduct.isOutOfStock || !selectedProductForCart
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-yellow-800 text-white hover:bg-yellow-900'
-            }`}
-          >
-            {selectedProduct.isOutOfStock
-              ? 'Sin stock'
-              : requiresFlavorSelection && !selectedProductForCart
-                ? 'Elegí un gusto'
-                : 'Agregar al carrito'}
-          </button>
+          <div className="pt-1">
+	            <button
+	              type="button"
+	              onClick={() => {
+	                if (!selectedProduct.isOutOfStock && selectedProductSelectionsForCart.length) {
+	                  selectedProductSelectionsForCart.forEach((productSelection) => onAddToCart(productSelection));
+	                  setSelectedProduct(null);
+	                }
+	              }}
+	              disabled={selectedProduct.isOutOfStock || !selectedProductSelectionsForCart.length}
+	              className={`w-full py-4 rounded-2xl font-bold shadow-md transition-colors ${
+	                selectedProduct.isOutOfStock || !selectedProductSelectionsForCart.length
+	                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+	                  : 'bg-yellow-800 text-white hover:bg-yellow-900'
+	              }`}
+	            >
+	              {selectedProduct.isOutOfStock
+	                ? 'Sin stock'
+	                : requiresFlavorSelection && !selectedProductSelectionsForCart.length
+	                ? 'Elegí una opción'
+	                  : selectedProductQuantityToAdd > 1
+	                    ? `Agregar ${selectedProductQuantityToAdd} al carrito`
+	                    : 'Agregar al carrito'}
+	            </button>
+          </div>
         </div>
       </div>
     );

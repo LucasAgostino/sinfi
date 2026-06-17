@@ -60,8 +60,8 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
         ) : (
           <div className="space-y-3 max-w-2xl mx-auto">
             {items.map((item) => (
-              <div key={item.cartKey ?? item.id} className="bg-white rounded-xl p-4 shadow-md border-2 border-amber-100">
-                <div className="flex items-start gap-4">
+	              <div key={item.cartKey ?? item.id} className="relative bg-white rounded-xl p-4 pr-12 shadow-md border-2 border-amber-100">
+	                <div className="flex items-start gap-4">
                   <div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden bg-amber-100 border-2 border-amber-100 shadow-sm">
                     <img
                       src={item.imageUrl}
@@ -77,10 +77,10 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
                       Sin foto
                     </div>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-gray-900">{item.name}</h3>
+	                  <div className="min-w-0 flex-1">
+	                    <h3 className="line-clamp-2 break-words font-bold leading-tight text-gray-900">{item.name}</h3>
                     {item.selectedFlavor && (
-                      <p className="mt-1 text-sm font-bold text-gray-600">Gusto: {item.selectedFlavor}</p>
+                      <p className="mt-1 text-sm font-bold text-gray-600">Opción: {item.selectedFlavor}</p>
                     )}
                     <p className="text-xl font-bold text-yellow-900">${item.price}</p>
                     <div className="mt-2 space-y-1">
@@ -100,10 +100,11 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
                       </div>
                     </div>
                   </div>
-                  <button
-                    onClick={() => onRemoveItem(item.cartKey ?? String(item.id))}
-                    className="text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors"
-                  >
+	                  <button
+	                    onClick={() => onRemoveItem(item.cartKey ?? String(item.id))}
+	                    className="absolute right-2 top-3 text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors"
+	                    aria-label={`Eliminar ${item.name}`}
+	                  >
                     <Trash2 className="w-5 h-5" />
                   </button>
                 </div>

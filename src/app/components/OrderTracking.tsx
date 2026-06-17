@@ -145,7 +145,7 @@ export function OrderTracking({ orderNumber, total, items, onNewOrder }: OrderTr
                       <p className="font-bold leading-tight text-gray-900">{item.name}</p>
                       {item.selectedFlavor && (
                         <p className="mt-1 text-sm font-bold text-gray-600">
-                          Gusto: {item.selectedFlavor}
+                          Opción: {item.selectedFlavor}
                         </p>
                       )}
                       <p className="mt-1 text-sm font-medium text-gray-600">
