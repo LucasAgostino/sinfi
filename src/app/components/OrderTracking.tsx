@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Check, Clock, ChefHat, Package, Home, ReceiptText } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { formatMenuText } from '../utils/menuText';
 
 interface OrderItem {
   id: number;
@@ -142,10 +143,10 @@ export function OrderTracking({ orderNumber, total, items, onNewOrder }: OrderTr
                     className="flex items-start justify-between gap-4 rounded-xl border-2 border-amber-100 bg-amber-50/60 px-4 py-3"
                   >
                     <div className="min-w-0">
-                      <p className="font-bold leading-tight text-gray-900">{item.name}</p>
+                      <p className="font-bold leading-tight text-gray-900">{formatMenuText(item.name)}</p>
                       {item.selectedFlavor && (
                         <p className="mt-1 text-sm font-bold text-gray-600">
-                          Opción: {item.selectedFlavor}
+                          Opción: {formatMenuText(item.selectedFlavor)}
                         </p>
                       )}
                       <p className="mt-1 text-sm font-medium text-gray-600">

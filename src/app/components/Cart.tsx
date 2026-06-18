@@ -1,4 +1,5 @@
 import { ArrowLeft, Trash2, Plus, Minus } from 'lucide-react';
+import { formatMenuText } from '../utils/menuText';
 
 interface CartItem {
   id: number;
@@ -65,7 +66,7 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
                   <div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden bg-amber-100 border-2 border-amber-100 shadow-sm">
                     <img
                       src={item.imageUrl}
-                      alt={item.name}
+                      alt={formatMenuText(item.name)}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
@@ -78,9 +79,9 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
                     </div>
                   </div>
 	                  <div className="min-w-0 flex-1">
-	                    <h3 className="line-clamp-2 break-words font-bold leading-tight text-gray-900">{item.name}</h3>
+	                    <h3 className="line-clamp-2 break-words font-bold leading-tight text-gray-900">{formatMenuText(item.name)}</h3>
                     {item.selectedFlavor && (
-                      <p className="mt-1 text-sm font-bold text-gray-600">Opción: {item.selectedFlavor}</p>
+                      <p className="mt-1 text-sm font-bold text-gray-600">Opción: {formatMenuText(item.selectedFlavor)}</p>
                     )}
                     <p className="text-xl font-bold text-yellow-900">${item.price}</p>
                     <div className="mt-2 space-y-1">
@@ -103,7 +104,7 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
 	                  <button
 	                    onClick={() => onRemoveItem(item.cartKey ?? String(item.id))}
 	                    className="absolute right-2 top-3 text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors"
-	                    aria-label={`Eliminar ${item.name}`}
+	                    aria-label={`Eliminar ${formatMenuText(item.name)}`}
 	                  >
                     <Trash2 className="w-5 h-5" />
                   </button>

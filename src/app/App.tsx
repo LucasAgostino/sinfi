@@ -16,6 +16,7 @@ import { Checkout } from './components/Checkout';
 import { OrderTracking } from './components/OrderTracking';
 import { Feedback } from './components/Feedback';
 import { Account } from './components/Account';
+import { formatMenuText } from './utils/menuText';
 
 type Screen = 'onboarding' | 'login' | 'home' | 'cart' | 'checkout' | 'tracking' | 'feedback' | 'account';
 
@@ -59,8 +60,8 @@ export default function App() {
         (item) => (item.cartKey ?? String(item.id)) === itemKey,
       );
       const productLabel = product.selectedFlavor
-        ? `${product.name} · ${product.selectedFlavor}`
-        : product.name;
+        ? `${formatMenuText(product.name)} · ${formatMenuText(product.selectedFlavor)}`
+        : formatMenuText(product.name);
 
       if (existingItem) {
         toast.success(`${productLabel} agregado al carrito`, {
@@ -106,8 +107,8 @@ export default function App() {
     const item = cart.find((i) => (i.cartKey ?? String(i.id)) === cartKey);
     if (item) {
       const itemLabel = item.selectedFlavor
-        ? `${item.name} · ${item.selectedFlavor}`
-        : item.name;
+        ? `${formatMenuText(item.name)} · ${formatMenuText(item.selectedFlavor)}`
+        : formatMenuText(item.name);
       toast.error(`${itemLabel} eliminado del carrito`, {
         duration: 2000,
       });
@@ -329,9 +330,9 @@ export default function App() {
           >
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Buscar productos</h2>
+                <h2 className="text-xl font-bold text-gray-900">Buscar por categoría</h2>
                 <p className="text-sm text-gray-600 font-medium mt-1">
-                  Encontrá comidas, bebidas o combos.
+                  Encontrá una categoría y después filtrá por marca.
                 </p>
               </div>
               <button
@@ -346,7 +347,7 @@ export default function App() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-800" />
               <input
                 type="text"
-                placeholder="Buscar productos..."
+                placeholder="Buscar categorías..."
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -366,7 +367,7 @@ export default function App() {
               className="w-full mt-4 bg-yellow-800 text-white py-3 rounded-xl font-bold hover:bg-yellow-900 transition-colors shadow-md"
               type="button"
             >
-              Ver resultados
+              Ver categorías
             </button>
           </div>
         </div>
