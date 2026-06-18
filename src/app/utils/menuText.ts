@@ -15,6 +15,8 @@ const LOWERCASE_WORDS = new Set([
   'y',
 ]);
 
+const LOWERCASE_UNITS = new Set(['cc', 'g', 'kg', 'ml', 'oz']);
+
 const LETTER_OR_NUMBER_PATTERN = /[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9]/;
 
 const formatWord = (word: string, isFirstWord: boolean) => {
@@ -32,6 +34,10 @@ const formatWord = (word: string, isFirstWord: boolean) => {
 
   const [, prefix, core, suffix] = match;
   const normalizedCore = core.toLowerCase();
+
+  if (LOWERCASE_UNITS.has(normalizedCore) || /^x\d+$/.test(normalizedCore)) {
+    return `${prefix}${normalizedCore}${suffix}`;
+  }
 
   if (/^\d/.test(core) || /^[A-ZÁÉÍÓÚÜÑ0-9]+$/.test(core)) {
     return `${prefix}${core}${suffix}`;
