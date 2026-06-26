@@ -12,6 +12,7 @@ interface OrderItem {
   quantity: number;
   waitTimeMinutes: number;
   selectedFlavor?: string;
+  pickupLocation?: string;
 }
 
 interface OrderTrackingProps {
@@ -24,7 +25,9 @@ interface OrderTrackingProps {
 type OrderStatus = 'confirmed' | 'preparing' | 'ready' | 'arrived' | 'completed';
 
 interface VenueEstimate {
+  key: string;
   venue: string;
+  pickupLocation: string;
   itemCount: number;
   estimatedWaitMinutes: number;
 }
@@ -38,14 +41,18 @@ export function OrderTracking({ orderNumber, total, items, onNewOrder }: OrderTr
   const venueEstimates = useMemo(
     () => Array.from(
       items.reduce<Map<string, OrderItem[]>>((groups, item) => {
-        const venueItems = groups.get(item.venue) ?? [];
+        const pickupLocation = item.pickupLocation ?? item.venue;
+        const pickupKey = `${item.venue}::${pickupLocation}`;
+        const venueItems = groups.get(pickupKey) ?? [];
         venueItems.push(item);
-        groups.set(item.venue, venueItems);
+        groups.set(pickupKey, venueItems);
 
         return groups;
       }, new Map()),
-      ([venue, venueItems]): VenueEstimate => {
+      ([key, venueItems]): VenueEstimate => {
         const itemCount = venueItems.reduce((sum, item) => sum + item.quantity, 0);
+        const venue = venueItems[0]?.venue ?? 'Pedido';
+        const pickupLocation = venueItems[0]?.pickupLocation ?? venue;
         const slowestWaitMinutes = Math.max(
           ...venueItems.map((item) => item.waitTimeMinutes),
         );
@@ -53,7 +60,9 @@ export function OrderTracking({ orderNumber, total, items, onNewOrder }: OrderTr
         const quantityBufferMinutes = Math.max(0, Math.ceil((itemCount - 1) / 2) * 2);
 
         return {
+          key,
           venue,
+          pickupLocation,
           itemCount,
           estimatedWaitMinutes: Math.max(2, adjustedBaseWaitMinutes + quantityBufferMinutes),
         };
@@ -64,10 +73,10 @@ export function OrderTracking({ orderNumber, total, items, onNewOrder }: OrderTr
   const hasMultipleVenues = venueEstimates.length > 1;
   const allVenuesReady =
     venueEstimates.length > 0 &&
-    venueEstimates.every((venueEstimate) => readyVenues.includes(venueEstimate.venue));
+    venueEstimates.every((venueEstimate) => readyVenues.includes(venueEstimate.key));
   const allVenuesCompleted =
     venueEstimates.length > 0 &&
-    venueEstimates.every((venueEstimate) => completedVenues.includes(venueEstimate.venue));
+    venueEstimates.every((venueEstimate) => completedVenues.includes(venueEstimate.key));
   const estimatedWaitMinutes = Math.max(
     1,
     ...venueEstimates.map((venueEstimate) => venueEstimate.estimatedWaitMinutes),
@@ -95,9 +104,9 @@ export function OrderTracking({ orderNumber, total, items, onNewOrder }: OrderTr
 
       return setTimeout(() => {
         setReadyVenues((currentReadyVenues) =>
-          currentReadyVenues.includes(venueEstimate.venue)
+          currentReadyVenues.includes(venueEstimate.key)
             ? currentReadyVenues
-            : [...currentReadyVenues, venueEstimate.venue],
+            : [...currentReadyVenues, venueEstimate.key],
         );
       }, readyDelayMs);
     });
@@ -281,16 +290,16 @@ export function OrderTracking({ orderNumber, total, items, onNewOrder }: OrderTr
             <div className="mt-4 space-y-2">
               {venueEstimates.map((venueEstimate) => (
                 <div
-                  key={venueEstimate.venue}
+                  key={venueEstimate.key}
                   className="rounded-lg bg-amber-50 px-3 py-3"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-bold text-gray-900">
-                        {venueEstimate.venue}
+                        {venueEstimate.pickupLocation}
                       </p>
                       <p className="text-xs font-medium text-gray-500">
-                        Pedido #{orderNumber} · {venueEstimate.itemCount} producto{venueEstimate.itemCount === 1 ? '' : 's'} · {getVenueStatusText(venueEstimate.venue)}
+                        {venueEstimate.venue} · Pedido #{orderNumber} · {venueEstimate.itemCount} producto{venueEstimate.itemCount === 1 ? '' : 's'} · {getVenueStatusText(venueEstimate.key)}
                       </p>
                     </div>
                     <span className="shrink-0 text-sm font-bold text-yellow-900">
@@ -298,12 +307,12 @@ export function OrderTracking({ orderNumber, total, items, onNewOrder }: OrderTr
                     </span>
                   </div>
 
-                  {readyVenues.includes(venueEstimate.venue) &&
-                    !arrivedVenues.includes(venueEstimate.venue) &&
-                    !completedVenues.includes(venueEstimate.venue) && (
+                  {readyVenues.includes(venueEstimate.key) &&
+                    !arrivedVenues.includes(venueEstimate.key) &&
+                    !completedVenues.includes(venueEstimate.key) && (
                       <button
                         type="button"
-                        onClick={() => handleArrived(venueEstimate.venue)}
+                        onClick={() => handleArrived(venueEstimate.key)}
                         className="mt-3 w-full rounded-lg bg-yellow-800 px-3 py-2 text-sm font-bold text-white transition-colors hover:bg-yellow-900"
                       >
                         Ya llegué
@@ -353,7 +362,7 @@ export function OrderTracking({ orderNumber, total, items, onNewOrder }: OrderTr
                         </p>
                       )}
                       <p className="mt-1 text-sm font-medium text-gray-600">
-                        {item.venue} · Cantidad: {item.quantity}
+                        {(item.pickupLocation ?? item.venue)} · Cantidad: {item.quantity}
                       </p>
                       <p className="mt-1 text-xs font-semibold text-gray-500">
                         Tiempo base: {item.waitTimeMinutes} min
@@ -378,7 +387,7 @@ export function OrderTracking({ orderNumber, total, items, onNewOrder }: OrderTr
 
         {status === 'ready' && !hasMultipleVenues && venueEstimates[0] && (
           <button
-            onClick={() => handleArrived(venueEstimates[0].venue)}
+            onClick={() => handleArrived(venueEstimates[0].key)}
             className="w-full bg-yellow-800 text-white py-4 rounded-xl font-bold hover:bg-yellow-900 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg"
           >
             <Home className="w-6 h-6" />

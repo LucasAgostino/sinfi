@@ -37,6 +37,7 @@ interface Product {
   selectedFlavor?: string;
   quantityToAdd?: number;
   cartKey?: string;
+  pickupLocation?: string;
 }
 
 interface CartItem extends Product {
@@ -120,6 +121,7 @@ export default function App() {
   const [orderTotal, setOrderTotal] = useState(0);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [homePickupResetKey, setHomePickupResetKey] = useState(0);
   const cartButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const loadUserSession = (name: string) => {
@@ -143,10 +145,15 @@ export default function App() {
       const productLabel = product.selectedFlavor
         ? `${formatMenuText(product.name)} · ${formatMenuText(product.selectedFlavor)}`
         : formatMenuText(product.name);
+      const pickupDescription = product.pickupLocation
+        ? `Retiro: ${product.pickupLocation}`
+        : undefined;
 
       if (existingItem) {
         toast.success(`${productLabel} agregado al carrito`, {
-          description: `Cantidad: ${existingItem.quantity + quantityToAdd}`,
+          description: pickupDescription
+            ? `${pickupDescription} · Cantidad: ${existingItem.quantity + quantityToAdd}`
+            : `Cantidad: ${existingItem.quantity + quantityToAdd}`,
           duration: 2000,
           action: {
             label: 'Ver carrito',
@@ -161,7 +168,9 @@ export default function App() {
       }
 
       toast.success(`${productLabel} agregado al carrito`, {
-        description: `Cantidad: ${quantityToAdd}`,
+        description: pickupDescription
+          ? `${pickupDescription} · Cantidad: ${quantityToAdd}`
+          : `Cantidad: ${quantityToAdd}`,
         duration: 2000,
         action: {
           label: 'Ver carrito',
@@ -216,6 +225,7 @@ export default function App() {
     writeStoredItems(CART_STORAGE_PREFIX, userName, []);
     setCurrentScreen('tracking');
     setCart([]);
+    setHomePickupResetKey((currentKey) => currentKey + 1);
   };
 
   const handleRepeatLastOrder = () => {
@@ -270,6 +280,9 @@ export default function App() {
 
   const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const cartPickupLocations = Array.from(
+    new Set(cart.map((item) => item.pickupLocation).filter((location): location is string => Boolean(location))),
+  );
   const showBottomNav =
     Boolean(userName) &&
     !['onboarding', 'login'].includes(currentScreen) &&
@@ -357,31 +370,35 @@ export default function App() {
         <Login onLogin={loadUserSession} onFeedback={() => setCurrentScreen('feedback')} />
       )}
 
-      {currentScreen === 'home' && (
-        <Home
-          userName={userName}
-          onAddToCart={handleAddToCart}
-          lastOrderItems={lastOrderItems}
-          onRepeatLastOrder={handleRepeatLastOrder}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          onLogout={handleLogout}
-          getCartTarget={() => {
-            const cartButtonRect = cartButtonRef.current?.getBoundingClientRect();
+      {userName && !['onboarding', 'login'].includes(currentScreen) && (
+        <div className={currentScreen === 'home' ? 'block' : 'hidden'}>
+          <Home
+            userName={userName}
+            onAddToCart={handleAddToCart}
+            lastOrderItems={lastOrderItems}
+            cartPickupLocations={cartPickupLocations}
+            pickupResetKey={homePickupResetKey}
+            onRepeatLastOrder={handleRepeatLastOrder}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            onLogout={handleLogout}
+            getCartTarget={() => {
+              const cartButtonRect = cartButtonRef.current?.getBoundingClientRect();
 
-            if (!cartButtonRect) {
+              if (!cartButtonRect) {
+                return {
+                  x: window.innerWidth / 2,
+                  y: window.innerHeight - 34,
+                };
+              }
+
               return {
-                x: window.innerWidth / 2,
-                y: window.innerHeight - 34,
+                x: cartButtonRect.left + cartButtonRect.width / 2,
+                y: cartButtonRect.top + cartButtonRect.height / 2,
               };
-            }
-
-            return {
-              x: cartButtonRect.left + cartButtonRect.width / 2,
-              y: cartButtonRect.top + cartButtonRect.height / 2,
-            };
-          }}
-        />
+            }}
+          />
+        </div>
       )}
 
       {currentScreen === 'cart' && (

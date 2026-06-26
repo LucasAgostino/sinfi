@@ -14,6 +14,7 @@ interface CartItem {
   imageUrl: string;
   waitTimeMinutes: number;
   selectedFlavor?: string;
+  pickupLocation?: string;
 }
 
 const MAX_WAIT_TIME_MINUTES = 30;
@@ -101,6 +102,11 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
 	                    <h3 className="line-clamp-2 break-words font-bold leading-tight text-gray-900">{formatMenuText(item.name)}</h3>
                     {item.selectedFlavor && (
                       <p className="mt-1 text-sm font-bold text-gray-600">Opción: {formatMenuText(item.selectedFlavor)}</p>
+                    )}
+                    {item.pickupLocation && (
+                      <p className="mt-1 text-xs font-extrabold uppercase tracking-[0.08em] text-yellow-900">
+                        Retiro: {item.pickupLocation}
+                      </p>
                     )}
                     <p className="text-xl font-bold text-yellow-900">${item.price}</p>
                     <div className="mt-2 space-y-1">

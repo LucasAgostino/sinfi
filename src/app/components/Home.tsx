@@ -64,6 +64,7 @@ interface Product {
   selectedFlavor?: string;
   quantityToAdd?: number;
   cartKey?: string;
+  pickupLocation?: string;
 }
 
 interface LastOrderItem extends Product {
@@ -74,6 +75,8 @@ interface HomeProps {
   userName: string;
   onAddToCart: (product: Product) => void;
   lastOrderItems: LastOrderItem[];
+  cartPickupLocations: string[];
+  pickupResetKey: number;
   onRepeatLastOrder: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
@@ -317,7 +320,6 @@ const VENUE_LOCATIONS: Record<string, string[]> = {
     'Lima 2, Piso 10',
     'Independencia 2, Piso 5',
     'Lima 3, Piso 7',
-    'Lima 3, Piso 7',
     'Lima 3, Subsuelo 1, Buffet grande',
     'Lima 3, Subsuelo 1, Buffet chico',
     'Patio, Al lado del edificio Labs',
@@ -330,6 +332,40 @@ const VENUE_LOCATIONS: Record<string, string[]> = {
     'Lima 3, Piso 8',
     'Chile, Patio al lado del edificio',
   ],
+};
+
+const LIMITED_PICKUP_PRODUCT_IDS: Record<string, Set<number>> = {
+  'Lima 2, Piso 10': new Set([
+    26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 37, 38, 41, 43, 44, 45, 46, 47, 48, 49,
+    50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68,
+    69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 83, 85, 86, 87, 89, 90,
+    91, 92, 93, 94, 95, 96, 97, 98, 99,
+  ]),
+  'Lima 3, Subsuelo 1, Buffet grande': new Set([
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24, 25,
+    202,
+  ]),
+  'Lima 3, Subsuelo 1, Buffet chico': new Set([
+    1, 2, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 20, 23, 24, 25,
+    202,
+  ]),
+};
+
+const getProductPickupLocations = (product: Product) => {
+  const venueLocations = VENUE_LOCATIONS[product.venue] ?? [];
+  const explicitLocations = venueLocations.filter((location) =>
+    LIMITED_PICKUP_PRODUCT_IDS[location]?.has(product.id),
+  );
+  const generalLocations = venueLocations.filter((location) => !LIMITED_PICKUP_PRODUCT_IDS[location]);
+  const locations = [...explicitLocations, ...generalLocations];
+
+  return locations.length > 0 ? locations : [product.venue];
+};
+
+const isProductAvailableAtPickupLocation = (product: Product, location: string) => {
+  const limitedProductIds = LIMITED_PICKUP_PRODUCT_IDS[location];
+
+  return !limitedProductIds || limitedProductIds.has(product.id);
 };
 
 const getWaitTimeBarColor = (waitTimeMinutes: number) => {
@@ -595,6 +631,8 @@ export function Home({
   userName,
   onAddToCart,
   lastOrderItems = [],
+  cartPickupLocations = [],
+  pickupResetKey,
   onRepeatLastOrder,
   searchQuery,
   onSearchChange,
@@ -612,6 +650,8 @@ export function Home({
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
   const [isBrandMenuOpen, setIsBrandMenuOpen] = useState(false);
   const [selectedVenueLocations, setSelectedVenueLocations] = useState<string | null>(null);
+  const [selectedPickupLocation, setSelectedPickupLocation] = useState<string | null>(null);
+  const [pendingPickupSelections, setPendingPickupSelections] = useState<Product[]>([]);
   const [featuredShuffleTick, setFeaturedShuffleTick] = useState(0);
   const [selectedFlavorQuantities, setSelectedFlavorQuantities] = useState<Record<string, number>>({});
   const [cartFlights, setCartFlights] = useState<CartFlight[]>([]);
@@ -626,7 +666,17 @@ export function Home({
     !normalizedCategorySearch ||
     normalizeSearchText(getCanonicalCategory(category)).includes(normalizedCategorySearch);
 
+  useEffect(() => {
+    setSelectedPickupLocation(null);
+    setSelectedVenueLocations(null);
+    setPendingPickupSelections([]);
+  }, [pickupResetKey]);
+
   const venueProducts = PRODUCTS.filter((product) => product.venue === selectedVenue);
+  const activePickupLocation =
+    selectedPickupLocation ??
+    cartPickupLocations.find((location) => selectedVenue && VENUE_LOCATIONS[selectedVenue]?.includes(location)) ??
+    null;
   const featuredProductsByVenue = venues.map((venue) => {
     const venueItems = PRODUCTS.filter(
       (product) =>
@@ -681,9 +731,40 @@ export function Home({
     });
   };
 
+  const canPendingSelectionsUsePickupLocation = (location: string) =>
+    pendingPickupSelections.length === 0 ||
+    pendingPickupSelections.every((productSelection) =>
+      isProductAvailableAtPickupLocation(productSelection, location),
+    );
+
+  const handleSelectPickupLocation = (location: string) => {
+    if (!canPendingSelectionsUsePickupLocation(location)) {
+      return;
+    }
+
+    setSelectedPickupLocation(location);
+    setSelectedVenueLocations(null);
+    setSelectedCategory('Todas las categorías');
+    setSelectedBrand('Todas las marcas');
+    setIsCategoryMenuOpen(false);
+    setIsBrandMenuOpen(false);
+    if (pendingPickupSelections.length) {
+      pendingPickupSelections.forEach((productSelection) => {
+        const productWithPickupLocation = applyPickupLocation(productSelection, location);
+
+        if (productWithPickupLocation) {
+          onAddToCart(productWithPickupLocation);
+        }
+      });
+      setPendingPickupSelections([]);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   useEffect(() => {
     setSelectedCategory('Todas las categorías');
     setSelectedBrand('Todas las marcas');
+    setSelectedPickupLocation(null);
     setIsCategoryMenuOpen(false);
     setIsBrandMenuOpen(false);
   }, [selectedVenue]);
@@ -736,11 +817,24 @@ export function Home({
 	      selectedBrand === 'Todas las marcas' ||
 	      getProductBrand(product) === selectedBrand;
     return matchesCategory && matchesBrand && matchesCategorySearch(product.category);
+  }).sort((firstProduct, secondProduct) => {
+    if (!activePickupLocation) {
+      return firstProduct.name.localeCompare(secondProduct.name, 'es');
+    }
+
+    const firstProductIsAvailable = isProductAvailableAtPickupLocation(firstProduct, activePickupLocation);
+    const secondProductIsAvailable = isProductAvailableAtPickupLocation(secondProduct, activePickupLocation);
+
+    if (firstProductIsAvailable === secondProductIsAvailable) {
+      return firstProduct.name.localeCompare(secondProduct.name, 'es');
+    }
+
+    return firstProductIsAvailable ? -1 : 1;
   });
 
   useEffect(() => {
     setVisibleProductsCount(10);
-  }, [selectedVenue, selectedCategory, selectedBrand, searchQuery]);
+  }, [selectedVenue, selectedCategory, selectedBrand, selectedPickupLocation, searchQuery]);
 
   useEffect(() => {
     if (selectedVenue || selectedVenueLocations) {
@@ -844,7 +938,38 @@ export function Home({
     });
   };
 
-  const buildProductSelections = (product: Product) => {
+  const getResolvedPickupLocation = (product: Product) => {
+    const pickupLocations = getProductPickupLocations(product);
+
+    return pickupLocations.length === 1 ? pickupLocations[0] : null;
+  };
+
+  const promptForPickupLocation = (product: Product, pendingSelections: Product[] = [product]) => {
+    setPendingPickupSelections(pendingSelections);
+    setSelectedVenue(product.venue);
+    setSelectedVenueLocations(product.venue);
+    closeProductDetail();
+  };
+
+  const applyPickupLocation = (product: Product, pickupLocation: string) => {
+    if (!isProductAvailableAtPickupLocation(product, pickupLocation)) {
+      return null;
+    }
+
+    return {
+      ...product,
+      pickupLocation,
+      cartKey: `${product.cartKey ?? product.id}:pickup:${pickupLocation}`,
+    };
+  };
+
+  const withPickupLocation = (product: Product) => {
+    const pickupLocation = getResolvedPickupLocation(product);
+
+    return pickupLocation ? applyPickupLocation(product, pickupLocation) : null;
+  };
+
+  const buildProductSelectionsWithoutPickup = (product: Product) => {
     const selectionOptions = getProductSelectionOptions(product);
 
     if (!selectionOptions.length) {
@@ -866,6 +991,18 @@ export function Home({
         cartKey: `${product.id}:${selectedFlavor}`,
       };
     });
+  };
+
+  const buildProductSelections = (product: Product) => {
+    const pickupLocation = getResolvedPickupLocation(product);
+
+    if (!pickupLocation) {
+      return [];
+    }
+
+    return buildProductSelectionsWithoutPickup(product)
+      .map((productSelection) => applyPickupLocation(productSelection, pickupLocation))
+      .filter((productSelection): productSelection is Product => Boolean(productSelection));
   };
 
   const launchCartFlight = (event: MouseEvent<HTMLElement>) => {
@@ -991,8 +1128,15 @@ export function Home({
                 return;
               }
 
+              const productWithPickupLocation = withPickupLocation(product);
+
+              if (!productWithPickupLocation) {
+                promptForPickupLocation(product);
+                return;
+              }
+
               launchCartFlight(event);
-              onAddToCart(product);
+              onAddToCart(productWithPickupLocation);
             }
           }}
           disabled={product.isOutOfStock}
@@ -1012,6 +1156,8 @@ export function Home({
     const selectedProductImageUrls = getProductImageUrls(selectedProduct);
     const selectionOptions = getProductSelectionOptions(selectedProduct);
     const requiresFlavorSelection = Boolean(selectionOptions.length);
+    const needsPickupLocationSelection = !getResolvedPickupLocation(selectedProduct);
+    const needsFlavorSelection = requiresFlavorSelection && !selectedFlavors.length;
     const selectedProductSelectionsForCart = buildProductSelections(selectedProduct);
 	    const displayedProductPrice =
 	      requiresFlavorSelection && selectedProductSelectionsForCart.length
@@ -1140,7 +1286,48 @@ export function Home({
 
           <div className="rounded-2xl border-2 border-amber-100 bg-white p-4 space-y-2 shadow-sm">
             <p className="text-sm font-bold text-gray-500 uppercase tracking-[0.14em]">Retiro</p>
-            <p className="text-lg font-bold text-gray-900">Se puede retirar en: {selectedProduct.venue}</p>
+            <div className="space-y-2">
+              <p className="text-lg font-bold text-gray-900">
+                Se puede retirar en:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {getProductPickupLocations(selectedProduct).map(
+                  (location) => {
+                    const isSelectedLocation = selectedPickupLocation === location;
+                    const hasCartItemsAtLocation = cartPickupLocations.includes(location);
+
+                    return (
+                    <span
+                      key={`${selectedProduct.id}-${location}`}
+                      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-extrabold ring-1 ${
+                        isSelectedLocation
+                          ? 'bg-green-600 text-white ring-green-600'
+                          : hasCartItemsAtLocation
+                            ? 'bg-blue-50 text-blue-950 ring-blue-200'
+                          : 'bg-amber-50 text-yellow-950 ring-amber-100'
+                      }`}
+                    >
+                      <MapPin
+                        className={`h-3.5 w-3.5 shrink-0 ${
+                          isSelectedLocation
+                            ? 'text-white'
+                            : hasCartItemsAtLocation
+                              ? 'text-blue-700'
+                              : 'text-yellow-900'
+                        }`}
+                      />
+                      {location}
+                      {hasCartItemsAtLocation && !isSelectedLocation && (
+                        <span className="ml-1 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-extrabold text-blue-800">
+                          En carrito
+                        </span>
+                      )}
+                    </span>
+                    );
+                  },
+                )}
+              </div>
+            </div>
             {!selectedProduct.isOutOfStock && (
               <>
                 <div className="flex items-center justify-between text-xs font-bold text-gray-600">
@@ -1160,23 +1347,37 @@ export function Home({
 	            <button
 	              type="button"
 	              onClick={(event) => {
-	                if (!selectedProduct.isOutOfStock && selectedProductSelectionsForCart.length) {
+	                if (selectedProduct.isOutOfStock) {
+                    return;
+                  }
+
+                  if (needsPickupLocationSelection) {
+                    promptForPickupLocation(
+                      selectedProduct,
+                      buildProductSelectionsWithoutPickup(selectedProduct),
+                    );
+                    return;
+                  }
+
+                  if (selectedProductSelectionsForCart.length) {
                     launchCartFlight(event);
 	                  selectedProductSelectionsForCart.forEach((productSelection) => onAddToCart(productSelection));
 	                  closeProductDetail();
 	                }
 	              }}
-	              disabled={selectedProduct.isOutOfStock || !selectedProductSelectionsForCart.length}
+	              disabled={selectedProduct.isOutOfStock || needsFlavorSelection}
 	              className={`w-full py-4 rounded-2xl font-bold shadow-md transition-colors ${
-	                selectedProduct.isOutOfStock || !selectedProductSelectionsForCart.length
+	                selectedProduct.isOutOfStock || needsFlavorSelection
 	                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
 	                  : 'bg-yellow-800 text-white hover:bg-yellow-900'
 	              }`}
 	            >
 	              {selectedProduct.isOutOfStock
 	                ? 'Sin stock'
-	                : requiresFlavorSelection && !selectedProductSelectionsForCart.length
+	                : needsFlavorSelection
 	                ? 'Elegí una opción'
+                  : needsPickupLocationSelection
+                    ? 'Elegí dónde retirar'
 	                  : selectedProductQuantityToAdd > 1
 	                    ? `Agregar ${selectedProductQuantityToAdd} al carrito`
 	                    : 'Agregar al carrito'}
@@ -1273,7 +1474,7 @@ export function Home({
               )}
             </div>
 
-	            {selectedVenue && (
+	            {selectedVenue && !selectedVenueLocations && (
 	              <div className="col-span-2 grid min-w-0 grid-cols-2 gap-4 sm:col-span-2">
 	                <div className={`relative min-w-0 ${showsBrandFilter ? '' : 'col-span-2'}`}>
 	                  <div className="flex w-full items-center gap-2 border-b border-amber-300 bg-transparent px-0 py-1.5 transition-colors hover:border-amber-400">
@@ -1457,49 +1658,37 @@ export function Home({
           </div>
         )}
 
-        {selectedVenue && !selectedVenueLocations && (
-          <div className="flex items-center gap-2 px-1 pb-1">
-            <span className="flex h-9 w-11 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-amber-100">
-              {getVenueBadge(selectedVenue)}
-            </span>
-            <div className="flex min-w-0 items-center gap-2">
-              <h2 className="truncate text-base font-extrabold text-gray-900">{selectedVenue}</h2>
-              <button
-                type="button"
-                onClick={() => setSelectedVenueLocations(selectedVenue)}
-                className="shrink-0 text-xs font-bold text-gray-400 transition-colors hover:text-gray-500"
-              >
-                Ver ubicaciones
-              </button>
-            </div>
-          </div>
-        )}
-
         {selectedVenueLocations && (
           <div className="space-y-3">
             <div className="overflow-hidden rounded-[1.75rem] border-2 border-amber-100 bg-white shadow-sm">
               <div className="bg-[linear-gradient(135deg,#fff8dc_0%,#fffdf4_55%,#ffffff_100%)] px-4 py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-11 w-12 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-amber-100">
-                      {getVenueBadge(selectedVenueLocations)}
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedVenueLocations(null);
+                        setPendingPickupSelections([]);
+                      }}
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-yellow-900 shadow-sm ring-1 ring-amber-100 transition-colors hover:bg-amber-50"
+                      aria-label="Volver"
+                    >
+                      <ArrowLeft className="h-5 w-5" />
+                    </button>
                     <div className="min-w-0">
                       <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">
-                        Ubicaciones de {selectedVenueLocations}
+                        {pendingPickupSelections.length ? 'Elegí dónde retirar' : `Ubicaciones de ${selectedVenueLocations}`}
                       </p>
                       <p className="mt-1 max-w-[14rem] text-sm font-medium leading-relaxed text-gray-500">
-                        {getVenueLocationNote(selectedVenueLocations)}
+                        {pendingPickupSelections.length
+                          ? 'Seleccioná un punto para validar stock y agregarlo al carrito.'
+                          : getVenueLocationNote(selectedVenueLocations)}
                       </p>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedVenueLocations(null)}
-                    className="shrink-0 rounded-full bg-white px-3 py-1.5 text-sm font-bold text-gray-400 shadow-sm ring-1 ring-amber-100 transition-colors hover:text-gray-600"
-                  >
-                    Cerrar
-                  </button>
+                  <span className="flex h-11 w-12 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-amber-100">
+                    {getVenueBadge(selectedVenueLocations)}
+                  </span>
                 </div>
               </div>
             </div>
@@ -1517,11 +1706,71 @@ export function Home({
                     <p className="text-xs font-bold uppercase tracking-[0.16em] text-gray-400">Edificio</p>
                     <p className="mt-1 text-base font-extrabold leading-snug text-gray-900">{building}</p>
                     <div className="mt-3 space-y-2">
-                      {details.map((detail) => (
-                        <div key={`${building}-${detail}`} className="rounded-2xl bg-amber-50/70 px-3 py-2">
-                          <p className="text-sm font-semibold leading-snug text-gray-700">{detail}</p>
-                        </div>
-                      ))}
+                      {details.map((detail) => {
+                        const location = detail === building ? building : `${building}, ${detail}`;
+                        const hasLimitedMenu = Boolean(LIMITED_PICKUP_PRODUCT_IDS[location]);
+                        const isSelectedLocation = selectedPickupLocation === location;
+                        const hasCartItemsAtLocation = cartPickupLocations.includes(location);
+                        const canUseLocation = canPendingSelectionsUsePickupLocation(location);
+
+                        return (
+                          <button
+                            key={`${building}-${detail}`}
+                            type="button"
+                            onClick={() => handleSelectPickupLocation(location)}
+                            disabled={!canUseLocation}
+                            className={`flex w-full items-center justify-between gap-3 rounded-2xl px-3 py-2 text-left transition-colors ${
+                              !canUseLocation
+                                ? 'cursor-not-allowed bg-gray-100 text-gray-400 opacity-70'
+                                : isSelectedLocation
+                                ? 'bg-green-600 text-white shadow-sm'
+                                : hasCartItemsAtLocation
+                                  ? 'bg-blue-50 text-blue-950 ring-2 ring-blue-200 hover:bg-blue-100'
+                                : 'bg-amber-50/70 hover:bg-amber-100'
+                            }`}
+                          >
+                            <span className="min-w-0">
+                              <span className={`block text-sm font-semibold leading-snug ${
+                                !canUseLocation
+                                  ? 'text-gray-400'
+                                  : isSelectedLocation
+                                  ? 'text-white'
+                                  : hasCartItemsAtLocation
+                                    ? 'text-blue-950'
+                                    : 'text-gray-700'
+                              }`}>{detail}</span>
+                              <span className={`mt-0.5 block text-[11px] font-bold ${
+                                !canUseLocation
+                                  ? 'text-gray-400'
+                                  : isSelectedLocation
+                                  ? 'text-green-50'
+                                  : hasCartItemsAtLocation
+                                    ? 'text-blue-700'
+                                    : 'text-gray-400'
+                              }`}>
+                                {!canUseLocation
+                                  ? 'No disponible para este producto'
+                                  : isSelectedLocation
+                                  ? 'Retiro seleccionado'
+                                  : hasCartItemsAtLocation
+                                    ? 'Ya tenés productos acá'
+                                  : hasLimitedMenu
+                                    ? 'Menú cargado para esta ubicación'
+                                    : 'Usa el menú general'}
+                              </span>
+                            </span>
+                            <ChevronDown className={`-rotate-90 h-4 w-4 shrink-0 ${
+                              !canUseLocation
+                                ? 'text-gray-300'
+                                : isSelectedLocation
+                                ? 'text-white'
+                                : hasCartItemsAtLocation
+                                  ? 'text-blue-700'
+                                  : 'text-yellow-900'
+                            }`} />
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
