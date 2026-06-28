@@ -7,6 +7,8 @@ interface CheckoutProps {
   onConfirm: (paymentMethod: string) => void;
 }
 
+const MAX_NOTES_LENGTH = 140;
+
 export function Checkout({ total, onBack, onConfirm }: CheckoutProps) {
   const [paymentMethod, setPaymentMethod] = useState<string>('card');
   const [cardNumber, setCardNumber] = useState('');
@@ -46,7 +48,7 @@ export function Checkout({ total, onBack, onConfirm }: CheckoutProps) {
     `w-full rounded-lg border-2 py-3 font-semibold focus:outline-none focus:ring-2 ${
       hasTriedToConfirm && paymentMethod === 'card' && !isValid
         ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-200'
-        : 'border-gray-300 focus:border-yellow-700 focus:ring-yellow-700'
+        : 'border-gray-300 focus:border-emerald-500 focus:ring-emerald-500'
     }`;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -79,7 +81,7 @@ export function Checkout({ total, onBack, onConfirm }: CheckoutProps) {
 
   if (isRedirectingToMercadoPago) {
     return (
-      <div className="min-h-screen bg-amber-50 px-6 py-10">
+      <div className="min-h-screen bg-slate-50 px-6 py-10">
         <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-md flex-col items-center justify-center text-center">
           <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-sky-500 text-white shadow-lg">
             <Smartphone className="h-12 w-12" />
@@ -99,8 +101,8 @@ export function Checkout({ total, onBack, onConfirm }: CheckoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-amber-50 pb-24">
-      <div className="bg-yellow-800 text-white p-6 shadow-md">
+    <div className="min-h-screen bg-slate-50 pb-24">
+      <div className="bg-emerald-600 text-white p-6 shadow-md">
         <div className="flex items-center gap-4">
           <button onClick={onBack} className="hover:bg-white/20 p-2 rounded-full transition-colors">
             <ArrowLeft className="w-6 h-6" />
@@ -110,14 +112,14 @@ export function Checkout({ total, onBack, onConfirm }: CheckoutProps) {
       </div>
 
       <form onSubmit={handleSubmit} className="p-6 space-y-6 max-w-2xl mx-auto" noValidate>
-        <div className="bg-white rounded-xl p-6 shadow-md border-2 border-amber-100">
+        <div className="bg-white rounded-xl p-6 shadow-md border-2 border-emerald-100">
           <h2 className="font-bold text-gray-900 mb-4 text-lg">Método de Pago</h2>
           <div className="space-y-3">
             <label
               className={`flex items-center gap-4 p-4 border-2 rounded-xl cursor-pointer transition-colors ${
                 paymentMethod === 'card'
-                  ? 'border-yellow-800 bg-amber-50 shadow-sm'
-                  : 'border-gray-300 hover:border-yellow-700'
+                  ? 'border-emerald-600 bg-slate-50 shadow-sm'
+                  : 'border-gray-300 hover:border-emerald-500'
               }`}
             >
               <input
@@ -126,9 +128,9 @@ export function Checkout({ total, onBack, onConfirm }: CheckoutProps) {
                 value="card"
                 checked={paymentMethod === 'card'}
                 onChange={(e) => setPaymentMethod(e.target.value)}
-                className="w-5 h-5 text-yellow-800 accent-yellow-800"
+                className="w-5 h-5 text-emerald-700 accent-emerald-600"
               />
-              <CreditCard className="w-6 h-6 text-yellow-900" />
+              <CreditCard className="w-6 h-6 text-sky-900" />
               <div>
                 <p className="font-bold text-gray-900">Tarjeta de Crédito/Débito</p>
                 <p className="text-sm text-gray-600 font-medium">Pagá con crédito o débito</p>
@@ -138,8 +140,8 @@ export function Checkout({ total, onBack, onConfirm }: CheckoutProps) {
             <label
               className={`flex items-center gap-4 p-4 border-2 rounded-xl cursor-pointer transition-colors ${
                 paymentMethod === 'mercado_pago'
-                  ? 'border-yellow-800 bg-amber-50 shadow-sm'
-                  : 'border-gray-300 hover:border-yellow-700'
+                  ? 'border-emerald-600 bg-slate-50 shadow-sm'
+                  : 'border-gray-300 hover:border-emerald-500'
               }`}
             >
               <input
@@ -148,9 +150,9 @@ export function Checkout({ total, onBack, onConfirm }: CheckoutProps) {
                 value="mercado_pago"
                 checked={paymentMethod === 'mercado_pago'}
                 onChange={(e) => setPaymentMethod(e.target.value)}
-                className="w-5 h-5 text-yellow-800 accent-yellow-800"
+                className="w-5 h-5 text-emerald-700 accent-emerald-600"
               />
-              <Smartphone className="w-6 h-6 text-yellow-900" />
+              <Smartphone className="w-6 h-6 text-sky-900" />
               <div>
                 <p className="font-bold text-gray-900">Mercado Pago</p>
                 <p className="text-sm text-gray-600 font-medium">Pagá desde tu cuenta</p>
@@ -159,7 +161,7 @@ export function Checkout({ total, onBack, onConfirm }: CheckoutProps) {
           </div>
 
           {paymentMethod === 'card' && (
-            <div ref={cardErrorRef} className="mt-5 rounded-xl border-2 border-amber-100 bg-amber-50/70 p-4">
+            <div ref={cardErrorRef} className="mt-5 rounded-xl border-2 border-emerald-100 bg-slate-50/70 p-4">
               {shouldShowCardErrors && (
                 <div className="mb-4 flex items-start gap-3 rounded-xl border-2 border-red-200 bg-red-50 px-4 py-3 text-red-800">
                   <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
@@ -175,7 +177,7 @@ export function Checkout({ total, onBack, onConfirm }: CheckoutProps) {
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-gray-700">Número de tarjeta</label>
                   <div className="relative">
-                    <CreditCard className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-yellow-900" />
+                    <CreditCard className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-sky-900" />
                     <input
                       type="text"
                       inputMode="numeric"
@@ -194,7 +196,7 @@ export function Checkout({ total, onBack, onConfirm }: CheckoutProps) {
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-gray-700">Nombre en la tarjeta</label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-yellow-900" />
+                    <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-sky-900" />
                     <input
                       type="text"
                       value={cardName}
@@ -213,7 +215,7 @@ export function Checkout({ total, onBack, onConfirm }: CheckoutProps) {
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-gray-700">Vencimiento</label>
                     <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-yellow-900" />
+                      <Calendar className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-sky-900" />
                       <input
                         type="text"
                         inputMode="numeric"
@@ -232,7 +234,7 @@ export function Checkout({ total, onBack, onConfirm }: CheckoutProps) {
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-gray-700">CVV</label>
                     <div className="relative">
-                      <LockKeyhole className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-yellow-900" />
+                      <LockKeyhole className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-sky-900" />
                       <input
                         type="password"
                         inputMode="numeric"
@@ -253,18 +255,22 @@ export function Checkout({ total, onBack, onConfirm }: CheckoutProps) {
           )}
         </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-md border-2 border-amber-100">
+        <div className="bg-white rounded-xl p-6 shadow-md border-2 border-emerald-100">
           <h2 className="font-bold text-gray-900 mb-4 text-lg">Notas del Pedido</h2>
           <textarea
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            onChange={(e) => setNotes(e.target.value.slice(0, MAX_NOTES_LENGTH))}
+            maxLength={MAX_NOTES_LENGTH}
             placeholder="Agregá indicaciones especiales (opcional)..."
-            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-700 focus:border-yellow-700 resize-none font-medium"
+            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none font-medium"
             rows={3}
           />
+          <p className="mt-2 text-right text-xs font-bold text-gray-400">
+            {notes.length}/{MAX_NOTES_LENGTH}
+          </p>
         </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-md border-2 border-amber-100">
+        <div className="bg-white rounded-xl p-6 shadow-md border-2 border-emerald-100">
           <div className="flex justify-between items-center mb-4">
             <span className="text-gray-800 font-semibold">Subtotal</span>
             <span className="font-bold text-gray-900 text-lg">${total.toLocaleString()}</span>
@@ -273,16 +279,16 @@ export function Checkout({ total, onBack, onConfirm }: CheckoutProps) {
             <span className="text-gray-800 font-semibold">Servicio</span>
             <span className="font-bold text-gray-900 text-lg">$0</span>
           </div>
-          <div className="border-t-2 border-yellow-800 pt-4 flex justify-between items-center">
+          <div className="border-t-2 border-emerald-600 pt-4 flex justify-between items-center">
             <span className="text-xl font-bold text-gray-900">Total</span>
-            <span className="text-3xl font-bold text-yellow-900">${total.toLocaleString()}</span>
+            <span className="text-3xl font-bold text-sky-900">${total.toLocaleString()}</span>
           </div>
         </div>
 
         <button
           type="submit"
           disabled={isProcessing}
-          className="w-full bg-yellow-800 text-white py-4 rounded-xl font-bold hover:bg-yellow-900 transition-colors disabled:bg-yellow-600 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
+          className="w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700 transition-colors disabled:bg-emerald-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
         >
           {isProcessing ? (
             <>

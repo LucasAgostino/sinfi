@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, Lock, Mail, MailCheck, MessageSquare, UserPlus } from "lucide-react";
 import { toast } from "sonner";
+import sinfiLogo from "../../assets/sinfi-logo-transparent.png";
 
 interface LoginProps {
   onLogin: (name: string) => void;
@@ -60,7 +61,7 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
   };
 
   const title = mode === "login"
-    ? "Bienvenido a La Sede"
+    ? "Bienvenido a SinFi"
     : mode === "recover"
       ? "Recuperar contraseña"
       : mode === "register"
@@ -69,7 +70,7 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <div className="bg-yellow-800 text-white p-6 text-center shadow-md relative">
+      <div className="bg-gradient-to-br from-emerald-500 to-sky-700 text-white p-6 text-center shadow-md relative">
         <button
           onClick={onFeedback}
           className="absolute right-6 top-6 bg-white/20 p-2 rounded-full hover:bg-white/30 transition-colors"
@@ -77,10 +78,8 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
         >
           <MessageSquare className="w-6 h-6" />
         </button>
-        <div className="w-16 h-16 bg-amber-50 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
-          <span className="text-2xl font-bold text-yellow-900">
-            LS
-          </span>
+        <div className="w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+          <img src={sinfiLogo} alt="SinFi" className="h-24 w-24 object-contain drop-shadow-lg" />
         </div>
         <h1 className="text-2xl font-bold">{title}</h1>
       </div>
@@ -102,7 +101,7 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="usuario"
-                  className="w-full pl-10 pr-32 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-700 focus:border-yellow-700"
+                  className="w-full pl-10 pr-32 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   required
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
@@ -126,7 +125,7 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="contraseña"
-                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-700 focus:border-yellow-700"
+                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   required
                 />
               </div>
@@ -135,7 +134,7 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-yellow-800 text-white py-3 rounded-lg font-bold hover:bg-yellow-900 transition-colors disabled:bg-yellow-600 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
+              className="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition-colors disabled:bg-emerald-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
             >
               {isLoading ? (
                 <>
@@ -151,7 +150,7 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
               <button
                 type="button"
                 onClick={() => setMode("recover")}
-                className="text-sm text-yellow-800 font-semibold hover:underline"
+                className="text-sm text-emerald-700 font-semibold hover:underline"
               >
                 ¿Olvidaste tu contraseña?
               </button>
@@ -160,7 +159,7 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
                 <button
                   type="button"
                   onClick={() => setMode("register")}
-                  className="text-yellow-800 font-bold hover:underline"
+                  className="text-emerald-700 font-bold hover:underline"
                 >
                   Registrate
                 </button>
@@ -174,13 +173,13 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
             <button
               type="button"
               onClick={resetMode}
-              className="flex items-center gap-2 text-yellow-800 font-bold"
+              className="flex items-center gap-2 text-emerald-700 font-bold"
             >
               <ArrowLeft className="w-5 h-5" />
               Volver al login
             </button>
 
-            <div className="bg-white rounded-xl p-5 border-2 border-amber-100 shadow-md space-y-4">
+            <div className="bg-white rounded-xl p-5 border-2 border-emerald-100 shadow-md space-y-4">
               <p className="text-gray-700 font-medium">
                 Ingresá tu usuario UADE y te enviaremos instrucciones para cambiar tu contraseña.
               </p>
@@ -191,7 +190,7 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
                   value={recoverUser}
                   onChange={(e) => setRecoverUser(e.target.value)}
                   placeholder="usuario"
-                  className="w-full pl-10 pr-32 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-700 focus:border-yellow-700"
+                  className="w-full pl-10 pr-32 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   required
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
@@ -203,7 +202,7 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-yellow-800 text-white py-3 rounded-lg font-bold hover:bg-yellow-900 transition-colors disabled:bg-yellow-600 disabled:cursor-not-allowed shadow-md"
+              className="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition-colors disabled:bg-emerald-300 disabled:cursor-not-allowed shadow-md"
             >
               {isLoading ? "Enviando..." : "Enviar instrucciones"}
             </button>
@@ -215,7 +214,7 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
             <button
               type="button"
               onClick={resetMode}
-              className="flex items-center gap-2 text-yellow-800 font-bold"
+              className="flex items-center gap-2 text-emerald-700 font-bold"
             >
               <ArrowLeft className="w-5 h-5" />
               Volver al login
@@ -230,7 +229,7 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
                   value={registerName}
                   onChange={(e) => setRegisterName(e.target.value)}
                   placeholder="Tu nombre"
-                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-700 focus:border-yellow-700"
+                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   required
                 />
               </div>
@@ -245,7 +244,7 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
                   value={registerUser}
                   onChange={(e) => setRegisterUser(e.target.value)}
                   placeholder="usuario"
-                  className="w-full pl-10 pr-32 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-700 focus:border-yellow-700"
+                  className="w-full pl-10 pr-32 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   required
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
@@ -263,7 +262,7 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
                   value={registerPassword}
                   onChange={(e) => setRegisterPassword(e.target.value)}
                   placeholder="contraseña"
-                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-700 focus:border-yellow-700"
+                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   required
                 />
               </div>
@@ -272,7 +271,7 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-yellow-800 text-white py-3 rounded-lg font-bold hover:bg-yellow-900 transition-colors disabled:bg-yellow-600 disabled:cursor-not-allowed shadow-md"
+              className="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition-colors disabled:bg-emerald-300 disabled:cursor-not-allowed shadow-md"
             >
               {isLoading ? "Creando cuenta..." : "Crear cuenta"}
             </button>
@@ -281,8 +280,8 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
 
         {mode === "verify" && (
           <div className="max-w-md mx-auto pt-8">
-            <div className="bg-white rounded-xl p-6 border-2 border-amber-100 shadow-md text-center space-y-5">
-              <div className="w-16 h-16 mx-auto rounded-full bg-amber-100 text-yellow-900 flex items-center justify-center">
+            <div className="bg-white rounded-xl p-6 border-2 border-emerald-100 shadow-md text-center space-y-5">
+              <div className="w-16 h-16 mx-auto rounded-full bg-emerald-50 text-sky-900 flex items-center justify-center">
                 <MailCheck className="w-8 h-8" />
               </div>
 
@@ -296,7 +295,7 @@ export function Login({ onLogin, onFeedback }: LoginProps) {
               <button
                 type="button"
                 onClick={handleBackToLogin}
-                className="w-full bg-yellow-800 text-white py-3 rounded-lg font-bold hover:bg-yellow-900 transition-colors shadow-md"
+                className="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition-colors shadow-md"
               >
                 Ir al login
               </button>

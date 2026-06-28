@@ -48,8 +48,8 @@ export function Faq({ onBack }: FaqProps) {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   return (
-    <div className="min-h-screen bg-amber-50 pb-28">
-      <div className="bg-yellow-800 text-white p-6 shadow-md">
+    <div className="min-h-screen bg-slate-50 pb-28">
+      <div className="bg-emerald-600 text-white p-6 shadow-md">
         <div className="flex items-center gap-4">
           <button onClick={onBack} className="hover:bg-white/20 p-2 rounded-full transition-colors">
             <ArrowLeft className="w-6 h-6" />
@@ -67,11 +67,11 @@ export function Faq({ onBack }: FaqProps) {
               key={item.question}
               type="button"
               onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-              className="w-full rounded-xl border-2 border-amber-100 bg-white px-4 py-4 text-left shadow-sm transition-colors hover:bg-amber-50"
+              className="w-full rounded-xl border-2 border-emerald-100 bg-white px-4 py-4 text-left shadow-sm transition-colors hover:bg-slate-50"
             >
               <span className="flex items-center justify-between gap-4">
                 <span className="font-bold text-gray-900">{item.question}</span>
-                <ChevronDown className={`h-4 w-4 shrink-0 text-yellow-900 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`h-4 w-4 shrink-0 text-sky-900 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
               </span>
               {isOpen && (
                 <span className="mt-2 block text-sm font-medium leading-relaxed text-gray-600">

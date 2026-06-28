@@ -42,10 +42,11 @@ interface CartProps {
 
 export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem, onClearCart }: CartProps) {
   const [isClearCartModalOpen, setIsClearCartModalOpen] = useState(false);
+  const [itemPendingRemoval, setItemPendingRemoval] = useState<CartItem | null>(null);
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   useEffect(() => {
-    if (!isClearCartModalOpen) {
+    if (!isClearCartModalOpen && !itemPendingRemoval) {
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
       return;
@@ -58,11 +59,11 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
     };
-  }, [isClearCartModalOpen]);
+  }, [isClearCartModalOpen, itemPendingRemoval]);
 
   return (
-    <div className={`min-h-screen bg-amber-50 flex flex-col ${items.length === 0 ? 'pb-24' : 'pb-36'}`}>
-      <div className="bg-yellow-800 text-white p-6 shadow-md">
+    <div className={`min-h-screen bg-slate-50 flex flex-col ${items.length === 0 ? 'pb-24' : 'pb-36'}`}>
+      <div className="bg-emerald-600 text-white p-6 shadow-md">
         <div className="flex items-center gap-4 mb-2">
           <button onClick={onBack} className="hover:bg-white/20 p-2 rounded-full transition-colors">
             <ArrowLeft className="w-6 h-6" />
@@ -81,9 +82,9 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
         ) : (
           <div className="space-y-3 max-w-2xl mx-auto">
             {items.map((item) => (
-	              <div key={item.cartKey ?? item.id} className="relative bg-white rounded-xl p-4 pr-12 shadow-md border-2 border-amber-100">
+	              <div key={item.cartKey ?? item.id} className="relative bg-white rounded-xl p-4 pr-12 shadow-md border-2 border-emerald-100">
 	                <div className="flex items-start gap-4">
-                  <div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden bg-amber-100 border-2 border-amber-100 shadow-sm">
+                  <div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden bg-emerald-50 border-2 border-emerald-100 shadow-sm">
                     <img
                       src={item.imageUrl}
                       alt={formatMenuText(item.name)}
@@ -94,7 +95,7 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
                         if (fallback) fallback.style.display = 'flex';
                       }}
                     />
-                    <div className="hidden w-full h-full items-center justify-center px-2 text-center text-xs font-bold text-yellow-900">
+                    <div className="hidden w-full h-full items-center justify-center px-2 text-center text-xs font-bold text-sky-900">
                       Sin foto
                     </div>
                   </div>
@@ -104,17 +105,17 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
                       <p className="mt-1 text-sm font-bold text-gray-600">Opción: {formatMenuText(item.selectedFlavor)}</p>
                     )}
                     {item.pickupLocation && (
-                      <p className="mt-1 text-xs font-extrabold uppercase tracking-[0.08em] text-yellow-900">
+                      <p className="mt-1 text-xs font-extrabold uppercase tracking-[0.08em] text-sky-900">
                         Retiro: {item.pickupLocation}
                       </p>
                     )}
-                    <p className="text-xl font-bold text-yellow-900">${item.price}</p>
+                    <p className="text-xl font-bold text-sky-900">${item.price}</p>
                     <div className="mt-2 space-y-1">
                       <div className="flex items-center justify-between text-xs font-bold text-gray-600">
                         <span>Tiempo estimado</span>
                         <span>{item.waitTimeMinutes} min</span>
                       </div>
-                      <div className="h-2 rounded-full bg-amber-100 overflow-hidden">
+                      <div className="h-2 rounded-full bg-emerald-50 overflow-hidden">
                         <div
                           className={`h-full rounded-full ${getWaitTimeBarColor(item.waitTimeMinutes)}`}
                           style={{ width: `${(item.waitTimeMinutes / MAX_WAIT_TIME_MINUTES) * 100}%` }}
@@ -127,7 +128,7 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
                     </div>
                   </div>
 	                  <button
-	                    onClick={() => onRemoveItem(item.cartKey ?? String(item.id))}
+	                    onClick={() => setItemPendingRemoval(item)}
 	                    className="absolute right-2 top-3 text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors"
 	                    aria-label={`Eliminar ${formatMenuText(item.name)}`}
 	                  >
@@ -135,22 +136,22 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
                   </button>
                 </div>
                 <div className="flex items-center justify-between mt-4">
-                  <div className="flex items-center gap-3 bg-amber-100 rounded-full p-1 border-2 border-amber-200">
+                  <div className="flex items-center gap-3 bg-emerald-50 rounded-full p-1 border-2 border-emerald-200">
                     <button
                       onClick={() => onUpdateQuantity(item.cartKey ?? String(item.id), -1)}
-                      className="bg-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-yellow-800 hover:text-white transition-colors border border-amber-200 font-bold"
+                      className="bg-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors border border-emerald-200 font-bold"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <span className="font-bold w-8 text-center text-yellow-900">{item.quantity}</span>
+                    <span className="font-bold w-8 text-center text-sky-900">{item.quantity}</span>
                     <button
                       onClick={() => onUpdateQuantity(item.cartKey ?? String(item.id), 1)}
-                      className="bg-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-yellow-800 hover:text-white transition-colors border border-amber-200 font-bold"
+                      className="bg-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors border border-emerald-200 font-bold"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
-                  <p className="font-bold text-yellow-900 text-lg">
+                  <p className="font-bold text-sky-900 text-lg">
                     ${(item.price * item.quantity).toLocaleString()}
                   </p>
                 </div>
@@ -173,15 +174,15 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
               </button>
             </div>
           </div>
-          <div className="fixed inset-x-0 bottom-0 z-50 border-t-2 border-yellow-800 bg-white/96 px-4 py-3 shadow-[0_-10px_30px_rgba(92,53,0,0.16)] backdrop-blur-xl">
+          <div className="fixed inset-x-0 bottom-0 z-50 border-t-2 border-emerald-600 bg-white/96 px-4 py-3 shadow-[0_-10px_30px_rgba(15,118,110,0.14)] backdrop-blur-xl">
           <div className="mx-auto flex max-w-2xl items-center gap-3">
             <div className="min-w-0 flex-1">
               <span className="block text-xs font-bold uppercase tracking-[0.14em] text-gray-500">Total</span>
-              <span className="block truncate text-2xl font-extrabold text-yellow-900">${total.toLocaleString()}</span>
+              <span className="block truncate text-2xl font-extrabold text-sky-900">${total.toLocaleString()}</span>
             </div>
             <button
               onClick={onCheckout}
-              className="shrink-0 rounded-xl bg-yellow-800 px-5 py-3 text-sm font-extrabold text-white shadow-md transition-colors hover:bg-yellow-900 active:scale-95"
+              className="shrink-0 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-extrabold text-white shadow-md transition-colors hover:bg-emerald-700 active:scale-95"
             >
               Confirmar
             </button>
@@ -207,7 +208,7 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
                 <button
                   type="button"
                   onClick={() => setIsClearCartModalOpen(false)}
-                  className="rounded-xl border-2 border-amber-200 bg-white px-4 py-3 text-sm font-extrabold text-yellow-900 transition-colors hover:bg-amber-50"
+                  className="rounded-xl border-2 border-emerald-200 bg-white px-4 py-3 text-sm font-extrabold text-sky-900 transition-colors hover:bg-slate-50"
                 >
                   Cancelar
                 </button>
@@ -220,6 +221,44 @@ export function Cart({ items, onBack, onCheckout, onUpdateQuantity, onRemoveItem
                   className="rounded-xl bg-red-600 px-4 py-3 text-sm font-extrabold text-white shadow-md transition-colors hover:bg-red-700"
                 >
                   Confirmar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {itemPendingRemoval && (
+          <div
+            className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 px-5 backdrop-blur-[2px]"
+            onClick={() => setItemPendingRemoval(null)}
+          >
+            <div
+              className="w-full max-w-sm rounded-2xl border-2 border-red-100 bg-white p-5 text-center shadow-2xl"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-600">
+                <Trash2 className="h-6 w-6" />
+              </div>
+              <h2 className="text-xl font-extrabold text-gray-900">Eliminar producto</h2>
+              <p className="mt-2 text-sm font-medium leading-relaxed text-gray-600">
+                ¿Seguro que querés eliminar {formatMenuText(itemPendingRemoval.name)} del carrito?
+              </p>
+              <div className="mt-5 grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setItemPendingRemoval(null)}
+                  className="rounded-xl border-2 border-emerald-200 bg-white px-4 py-3 text-sm font-extrabold text-sky-900 transition-colors hover:bg-slate-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onRemoveItem(itemPendingRemoval.cartKey ?? String(itemPendingRemoval.id));
+                    setItemPendingRemoval(null);
+                  }}
+                  className="rounded-xl bg-red-600 px-4 py-3 text-sm font-extrabold text-white shadow-md transition-colors hover:bg-red-700"
+                >
+                  Eliminar
                 </button>
               </div>
             </div>

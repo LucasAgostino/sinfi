@@ -21,8 +21,8 @@ export function Feedback({ onBack, onFaq }: FeedbackProps) {
   };
 
   return (
-    <div className="min-h-screen bg-amber-50 pb-28">
-      <div className="bg-yellow-800 text-white p-6 shadow-md">
+    <div className="min-h-screen bg-slate-50 pb-28">
+      <div className="bg-emerald-600 text-white p-6 shadow-md">
         <div className="flex items-center gap-4">
           <button onClick={onBack} className="hover:bg-white/20 p-2 rounded-full transition-colors">
             <ArrowLeft className="w-6 h-6" />
@@ -33,9 +33,9 @@ export function Feedback({ onBack, onFaq }: FeedbackProps) {
 
       <div className="p-6 space-y-6 max-w-2xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-white rounded-xl p-6 shadow-md border-2 border-amber-100">
+          <div className="bg-white rounded-xl p-6 shadow-md border-2 border-emerald-100">
             <div className="flex items-center gap-3 mb-4">
-              <div className="bg-amber-100 text-yellow-900 w-12 h-12 rounded-full flex items-center justify-center">
+              <div className="bg-emerald-50 text-sky-900 w-12 h-12 rounded-full flex items-center justify-center">
                 <MessageSquare className="w-6 h-6" />
               </div>
               <div>
@@ -44,7 +44,7 @@ export function Feedback({ onBack, onFaq }: FeedbackProps) {
               </div>
             </div>
 
-            <div className="mb-5 rounded-xl bg-amber-50 border-2 border-amber-100 p-4">
+            <div className="mb-5 rounded-xl bg-slate-50 border-2 border-emerald-100 p-4">
               <p className="text-sm font-bold text-gray-700 mb-3">Tu calificación</p>
               <div className="flex items-center gap-2">
                 {[1, 2, 3, 4, 5].map((value) => (
@@ -71,7 +71,7 @@ export function Feedback({ onBack, onFaq }: FeedbackProps) {
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
               placeholder="Escribí un comentario opcional..."
-              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-700 focus:border-yellow-700 resize-none font-medium"
+              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none font-medium"
               rows={6}
             />
           </div>
@@ -79,7 +79,7 @@ export function Feedback({ onBack, onFaq }: FeedbackProps) {
           <button
             type="submit"
             disabled={!rating}
-            className="w-full bg-yellow-800 text-white py-4 rounded-xl font-bold hover:bg-yellow-900 transition-colors disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
+            className="w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700 transition-colors disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
           >
             <Send className="w-5 h-5" />
             Enviar opinión
@@ -89,7 +89,7 @@ export function Feedback({ onBack, onFaq }: FeedbackProps) {
         <button
           type="button"
           onClick={onFaq}
-          className="flex w-full items-center justify-between gap-4 px-1 py-3 text-left text-yellow-900 transition-colors hover:text-yellow-950"
+          className="flex w-full items-center justify-between gap-4 px-1 py-3 text-left text-sky-900 transition-colors hover:text-sky-950"
         >
           <span className="text-base font-extrabold">Preguntas frecuentes</span>
           <ChevronRight className="h-5 w-5 shrink-0" />

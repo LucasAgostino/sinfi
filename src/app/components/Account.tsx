@@ -47,8 +47,8 @@ export function Account({ userName, onBack, onLogout, onUpdateName }: AccountPro
   };
 
   return (
-    <div className="min-h-screen bg-amber-50 pb-28">
-      <div className="bg-yellow-800 text-white p-6 shadow-md">
+    <div className="min-h-screen bg-slate-50 pb-28">
+      <div className="bg-emerald-600 text-white p-6 shadow-md">
         <div className="flex items-center gap-4">
           <button onClick={onBack} className="hover:bg-white/20 p-2 rounded-full transition-colors">
             <ArrowLeft className="w-6 h-6" />
@@ -58,9 +58,9 @@ export function Account({ userName, onBack, onLogout, onUpdateName }: AccountPro
       </div>
 
       <div className="p-6 space-y-6 max-w-2xl mx-auto">
-        <form onSubmit={handleSaveProfile} className="bg-white rounded-xl p-6 shadow-md border-2 border-amber-100 space-y-4">
+        <form onSubmit={handleSaveProfile} className="bg-white rounded-xl p-6 shadow-md border-2 border-emerald-100 space-y-4">
           <div className="flex items-center justify-between gap-3">
-            <div className="bg-amber-100 text-yellow-900 w-12 h-12 rounded-full flex items-center justify-center">
+            <div className="bg-emerald-50 text-sky-900 w-12 h-12 rounded-full flex items-center justify-center">
               <User className="w-6 h-6" />
             </div>
             <div className="flex-1">
@@ -78,23 +78,23 @@ export function Account({ userName, onBack, onLogout, onUpdateName }: AccountPro
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-700 focus:border-yellow-700 font-medium"
+              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 font-medium"
             />
           </div>
 
           <button
             type="submit"
             disabled={!name.trim()}
-            className="w-full bg-yellow-800 text-white py-3 rounded-xl font-bold hover:bg-yellow-900 transition-colors disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
+            className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
           >
             <Save className="w-5 h-5" />
             Guardar perfil
           </button>
         </form>
 
-        <form onSubmit={handleChangePassword} className="bg-white rounded-xl p-6 shadow-md border-2 border-amber-100 space-y-4">
+        <form onSubmit={handleChangePassword} className="bg-white rounded-xl p-6 shadow-md border-2 border-emerald-100 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="bg-amber-100 text-yellow-900 w-12 h-12 rounded-full flex items-center justify-center">
+            <div className="bg-emerald-50 text-sky-900 w-12 h-12 rounded-full flex items-center justify-center">
               <Lock className="w-6 h-6" />
             </div>
             <div>
@@ -108,27 +108,27 @@ export function Account({ userName, onBack, onLogout, onUpdateName }: AccountPro
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
             placeholder="Contraseña actual"
-            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-700 focus:border-yellow-700 font-medium"
+            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 font-medium"
           />
           <input
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             placeholder="Nueva contraseña"
-            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-700 focus:border-yellow-700 font-medium"
+            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 font-medium"
           />
           <input
             type="password"
             value={repeatPassword}
             onChange={(e) => setRepeatPassword(e.target.value)}
             placeholder="Repetir nueva contraseña"
-            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-700 focus:border-yellow-700 font-medium"
+            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 font-medium"
           />
 
           <button
             type="submit"
             disabled={!currentPassword || !newPassword || !repeatPassword}
-            className="w-full bg-yellow-800 text-white py-3 rounded-xl font-bold hover:bg-yellow-900 transition-colors disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
+            className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
           >
             <Lock className="w-5 h-5" />
             Cambiar contraseña

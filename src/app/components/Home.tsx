@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
 import { ArrowLeft, ChevronDown, ChevronUp, Clock, Croissant, LogOut, MapPin, Minus, Plus, RotateCcw, SlidersHorizontal, Tag, Trash2, X } from 'lucide-react';
 import starbucksLogo from '../../assets/starbucks-logo.png';
+import sinfiLogo from '../../../SinFi.png';
 import { formatMenuText } from '../utils/menuText';
 
 const rusticaLogo = `data:image/svg+xml;utf8,${encodeURIComponent(`
@@ -603,7 +604,7 @@ const getVenueBadge = (venue: string) => {
 
   if (venue === 'La Cantina') {
     return (
-      <span className="flex h-7 w-[3.5rem] items-center justify-center overflow-hidden rounded-md bg-white shadow-sm ring-1 ring-amber-200">
+      <span className="flex h-7 w-[3.5rem] items-center justify-center overflow-hidden rounded-md bg-white shadow-sm ring-1 ring-emerald-200">
         <img src={laCantinaLogo} alt="La Cantina" className="h-full w-full object-contain" />
       </span>
     );
@@ -1063,7 +1064,7 @@ export function Home({
         className={`relative flex items-center gap-3 rounded-xl border-2 p-3 shadow-md transition-colors cursor-pointer ${
           product.isOutOfStock
             ? 'bg-gray-100 border-gray-200 opacity-80'
-            : 'bg-white border-amber-100 hover:border-yellow-700'
+            : 'bg-white border-emerald-100 hover:border-emerald-500'
         }`}
       >
         {product.category === 'Combos' && !product.isOutOfStock && (
@@ -1076,9 +1077,9 @@ export function Home({
             Sin stock
           </div>
         )}
-        <div className={`h-[88px] w-[88px] shrink-0 overflow-hidden rounded-xl border-2 border-amber-100 bg-amber-100 shadow-sm ${productImageUrls.length > 1 ? 'grid grid-cols-2 gap-0.5 p-0.5' : ''}`}>
+        <div className={`h-[88px] w-[88px] shrink-0 overflow-hidden rounded-xl border-2 border-emerald-100 bg-emerald-50 shadow-sm ${productImageUrls.length > 1 ? 'grid grid-cols-2 gap-0.5 p-0.5' : ''}`}>
           {productImageUrls.map((imageUrl, index) => (
-            <div key={`${product.id}-${imageUrl}`} className="relative h-full min-h-0 overflow-hidden rounded-lg bg-amber-100">
+            <div key={`${product.id}-${imageUrl}`} className="relative h-full min-h-0 overflow-hidden rounded-lg bg-emerald-50">
               <img
                 src={imageUrl}
                 alt={`${formatMenuText(product.name)} ${index + 1}`}
@@ -1089,7 +1090,7 @@ export function Home({
                   if (fallback) fallback.style.display = 'flex';
                 }}
               />
-              <div className="hidden w-full h-full items-center justify-center px-1 text-center text-[10px] font-bold text-yellow-900">
+              <div className="hidden w-full h-full items-center justify-center px-1 text-center text-[10px] font-bold text-sky-900">
                 Sin foto
               </div>
             </div>
@@ -1099,14 +1100,14 @@ export function Home({
           <h3 className={`text-[15px] font-semibold leading-tight ${product.isOutOfStock ? 'text-gray-500' : 'text-gray-900'}`}>
             {getProductListName(product, selectedCategory)}
           </h3>
-          <p className={`mt-1 text-[17px] font-bold ${product.isOutOfStock ? 'text-gray-500' : 'text-yellow-900'}`}>{formatPrice(product.price)}</p>
+          <p className={`mt-1 text-[17px] font-bold ${product.isOutOfStock ? 'text-gray-500' : 'text-sky-900'}`}>{formatPrice(product.price)}</p>
           {!product.isOutOfStock && (
             <div className="mt-2 space-y-1">
               <div className="flex items-center justify-between text-[11px] font-bold text-gray-600">
                 <span>Tiempo estimado</span>
                 <span>{product.waitTimeMinutes} min</span>
               </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-amber-100">
+              <div className="h-1.5 overflow-hidden rounded-full bg-emerald-50">
                 <div
                   className={`h-full rounded-full ${getWaitTimeBarColor(product.waitTimeMinutes)}`}
                   style={{ width: `${(product.waitTimeMinutes / MAX_WAIT_TIME_MINUTES) * 100}%` }}
@@ -1143,7 +1144,7 @@ export function Home({
           className={`rounded-full p-2.5 transition-all shadow-md ${
             product.isOutOfStock
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-yellow-800 text-white hover:bg-yellow-900 hover:scale-110 active:scale-95'
+              : 'bg-emerald-600 text-white hover:bg-emerald-700 hover:scale-110 active:scale-95'
           }`}
         >
           <Plus className="h-5 w-5" />
@@ -1172,7 +1173,7 @@ export function Home({
 	    );
 
     return (
-      <div className="min-h-screen bg-amber-50 flex flex-col">
+      <div className="min-h-screen bg-slate-50 flex flex-col">
         {cartFlightLayer}
         <button
           type="button"
@@ -1183,9 +1184,9 @@ export function Home({
           <ArrowLeft className="h-5 w-5" />
         </button>
 
-        <div className={`relative h-80 bg-amber-100 ${selectedProductImageUrls.length > 1 ? 'grid grid-cols-2 gap-1 p-1' : ''}`}>
+        <div className={`relative h-80 bg-emerald-50 ${selectedProductImageUrls.length > 1 ? 'grid grid-cols-2 gap-1 p-1' : ''}`}>
           {selectedProductImageUrls.map((imageUrl, index) => (
-            <div key={`${selectedProduct.id}-${imageUrl}`} className="h-full min-h-0 overflow-hidden bg-amber-100">
+            <div key={`${selectedProduct.id}-${imageUrl}`} className="h-full min-h-0 overflow-hidden bg-emerald-50">
               <img
                 src={imageUrl}
                 alt={`${formatMenuText(selectedProduct.name)} ${index + 1}`}
@@ -1199,7 +1200,7 @@ export function Home({
           <div className="space-y-1">
             <div className="flex items-start justify-between gap-4">
               <h2 className="text-2xl font-extrabold text-gray-900">{formatMenuText(selectedProduct.name)}</h2>
-              <span className={`shrink-0 text-xl font-extrabold ${selectedProduct.isOutOfStock ? 'text-gray-500' : 'text-yellow-900'}`}>
+              <span className={`shrink-0 text-xl font-extrabold ${selectedProduct.isOutOfStock ? 'text-gray-500' : 'text-sky-900'}`}>
                 {formatPrice(displayedProductPrice)}
               </span>
             </div>
@@ -1209,7 +1210,7 @@ export function Home({
           <p className="text-base font-medium leading-relaxed text-gray-700">{selectedProduct.description}</p>
 
           {requiresFlavorSelection && (
-            <div className="selector-attention rounded-2xl border-2 border-amber-100 bg-white p-4 shadow-sm">
+            <div className="selector-attention rounded-2xl border-2 border-emerald-100 bg-white p-4 shadow-sm">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-sm font-bold uppercase tracking-[0.14em] text-gray-500">Opción</p>
@@ -1229,8 +1230,8 @@ export function Home({
 	                      key={option.name}
 	                      className={`rounded-xl border-2 px-4 py-3 text-sm font-bold transition-colors ${
 	                        selectedQuantity > 0
-	                          ? 'border-yellow-800 bg-amber-100 text-yellow-950'
-	                          : 'border-amber-200 bg-white text-gray-700 hover:border-amber-300 hover:bg-amber-50'
+	                          ? 'border-emerald-600 bg-emerald-50 text-sky-950'
+	                          : 'border-emerald-200 bg-white text-gray-700 hover:border-emerald-300 hover:bg-slate-50'
 	                      }`}
 	                    >
 	                      <button
@@ -1240,12 +1241,12 @@ export function Home({
 	                      >
 	                        <span>{formatMenuText(option.name)}</span>
 	                        {option.price !== undefined && (
-	                          <span className="shrink-0 text-yellow-900">{formatPrice(option.price)}</span>
+	                          <span className="shrink-0 text-sky-900">{formatPrice(option.price)}</span>
 	                        )}
 	                      </button>
 
 	                      {selectedQuantity > 0 && (
-	                        <div className="mt-3 flex items-center justify-between rounded-full bg-white/80 p-1 ring-1 ring-amber-200">
+	                        <div className="mt-3 flex items-center justify-between rounded-full bg-white/80 p-1 ring-1 ring-emerald-200">
 	                          <div className="flex items-center gap-1">
 	                            <button
 	                              type="button"
@@ -1258,19 +1259,19 @@ export function Home({
 	                            <button
 	                              type="button"
 	                              onClick={() => updateSelectedFlavorQuantity(option.name, -1)}
-	                              className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-900 shadow-sm ring-1 ring-amber-200 transition-colors hover:bg-yellow-800 hover:text-white"
+	                              className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-900 shadow-sm ring-1 ring-emerald-200 transition-colors hover:bg-emerald-600 hover:text-white"
 	                              aria-label={`Restar ${formatMenuText(option.name)}`}
 	                            >
 	                              <Minus className="h-4 w-4" />
 	                            </button>
 	                          </div>
-	                          <span className="min-w-8 text-center text-base font-extrabold text-yellow-950">
+	                          <span className="min-w-8 text-center text-base font-extrabold text-sky-950">
 	                            {selectedQuantity}
 	                          </span>
 	                          <button
 	                            type="button"
 	                            onClick={() => updateSelectedFlavorQuantity(option.name, 1)}
-	                            className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-900 shadow-sm ring-1 ring-amber-200 transition-colors hover:bg-yellow-800 hover:text-white"
+	                            className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-900 shadow-sm ring-1 ring-emerald-200 transition-colors hover:bg-emerald-600 hover:text-white"
 	                            aria-label={`Sumar ${formatMenuText(option.name)}`}
 	                          >
 	                            <Plus className="h-4 w-4" />
@@ -1284,7 +1285,7 @@ export function Home({
 	            </div>
 	          )}
 
-          <div className="rounded-2xl border-2 border-amber-100 bg-white p-4 space-y-2 shadow-sm">
+          <div className="rounded-2xl border-2 border-emerald-100 bg-white p-4 space-y-2 shadow-sm">
             <p className="text-sm font-bold text-gray-500 uppercase tracking-[0.14em]">Retiro</p>
             <div className="space-y-2">
               <p className="text-lg font-bold text-gray-900">
@@ -1304,7 +1305,7 @@ export function Home({
                           ? 'bg-green-600 text-white ring-green-600'
                           : hasCartItemsAtLocation
                             ? 'bg-blue-50 text-blue-950 ring-blue-200'
-                          : 'bg-amber-50 text-yellow-950 ring-amber-100'
+                          : 'bg-slate-50 text-sky-950 ring-emerald-100'
                       }`}
                     >
                       <MapPin
@@ -1313,7 +1314,7 @@ export function Home({
                             ? 'text-white'
                             : hasCartItemsAtLocation
                               ? 'text-blue-700'
-                              : 'text-yellow-900'
+                              : 'text-sky-900'
                         }`}
                       />
                       {location}
@@ -1334,7 +1335,7 @@ export function Home({
                   <span>Tiempo estimado</span>
                   <span>{selectedProduct.waitTimeMinutes} min</span>
                 </div>
-                <div className="h-2 rounded-full overflow-hidden bg-amber-100">
+                <div className="h-2 rounded-full overflow-hidden bg-emerald-50">
                   <div
                     className={`h-full rounded-full ${getWaitTimeBarColor(selectedProduct.waitTimeMinutes)}`}
                     style={{ width: `${(selectedProduct.waitTimeMinutes / MAX_WAIT_TIME_MINUTES) * 100}%` }}
@@ -1369,7 +1370,7 @@ export function Home({
 	              className={`w-full py-4 rounded-2xl font-bold shadow-md transition-colors ${
 	                selectedProduct.isOutOfStock || needsFlavorSelection
 	                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-	                  : 'bg-yellow-800 text-white hover:bg-yellow-900'
+	                  : 'bg-emerald-600 text-white hover:bg-emerald-700'
 	              }`}
 	            >
 	              {selectedProduct.isOutOfStock
@@ -1389,13 +1390,18 @@ export function Home({
   }
 
   return (
-    <div className="min-h-screen bg-amber-50 pb-28">
+    <div className="min-h-screen bg-slate-50 pb-28">
       {cartFlightLayer}
-      <div className="bg-yellow-800 px-6 py-4 text-white">
+      <div className="bg-emerald-600 px-6 py-4 text-white">
         <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm opacity-90">Hola,</p>
-            <h1 className="text-2xl font-bold">{formatUserName(userName)}</h1>
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-emerald-600 shadow-md ring-2 ring-white/25">
+              <img src={sinfiLogo} alt="SinFi" className="h-[4.8rem] w-[4.8rem] object-cover" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm opacity-90">Hola,</p>
+              <h1 className="truncate text-2xl font-bold">{formatUserName(userName)}</h1>
+            </div>
           </div>
           <button
             type="button"
@@ -1409,7 +1415,7 @@ export function Home({
       </div>
 
       <div className="sticky top-0 z-40 -mt-px">
-        <div className="bg-amber-50 px-6 pt-4 pb-3">
+        <div className="bg-slate-50 px-6 pt-4 pb-3">
           <div className="grid w-full grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3 sm:items-end">
             <div className={`${selectedVenue ? 'col-span-2 sm:col-span-1' : 'col-span-2 sm:col-span-3'} relative`}>
 	              <button
@@ -1419,10 +1425,10 @@ export function Home({
 	                  setIsCategoryMenuOpen(false);
 	                  setIsBrandMenuOpen(false);
 	                }}
-	                className="flex w-full items-center justify-between gap-2.5 border-b border-amber-300 bg-transparent px-0 py-1.5 transition-colors hover:border-amber-400"
+	                className="flex w-full items-center justify-between gap-2.5 border-b border-emerald-300 bg-transparent px-0 py-1.5 transition-colors hover:border-emerald-400"
 	              >
                 <div className="flex min-w-0 items-center gap-2">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center text-yellow-900">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center text-sky-900">
                     <MapPin className="h-3.5 w-3.5" />
                   </span>
                   <div className="min-w-0 text-left">
@@ -1436,7 +1442,7 @@ export function Home({
               </button>
 
               {isVenueMenuOpen && (
-                <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 max-h-72 overflow-y-auto overscroll-contain rounded-xl border-2 border-amber-200 bg-white p-1.5 shadow-xl">
+                <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 max-h-72 overflow-y-auto overscroll-contain rounded-xl border-2 border-emerald-200 bg-white p-1.5 shadow-xl">
                   <button
                     type="button"
                     onClick={() => {
@@ -1444,10 +1450,10 @@ export function Home({
                       setIsVenueMenuOpen(false);
                     }}
                     className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2.5 text-left transition-colors ${
-                      selectedVenue === null ? 'bg-amber-100 text-yellow-950' : 'hover:bg-amber-50 text-gray-800'
+                      selectedVenue === null ? 'bg-emerald-50 text-sky-950' : 'hover:bg-slate-50 text-gray-800'
                     }`}
                   >
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-100 text-yellow-900">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-50 text-sky-900">
                       <MapPin className="h-3 w-3" />
                     </span>
                     <span className="text-sm font-bold">Elegir un lugar</span>
@@ -1461,7 +1467,7 @@ export function Home({
                         setIsVenueMenuOpen(false);
                       }}
                       className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2.5 text-left transition-colors ${
-                        selectedVenue === venue ? 'bg-amber-100 text-yellow-950' : 'hover:bg-amber-50 text-gray-800'
+                        selectedVenue === venue ? 'bg-emerald-50 text-sky-950' : 'hover:bg-slate-50 text-gray-800'
                       }`}
                     >
                       <span className="flex w-12 shrink-0 justify-center">
@@ -1477,7 +1483,7 @@ export function Home({
 	            {selectedVenue && !selectedVenueLocations && (
 	              <div className="col-span-2 grid min-w-0 grid-cols-2 gap-4 sm:col-span-2">
 	                <div className={`relative min-w-0 ${showsBrandFilter ? '' : 'col-span-2'}`}>
-	                  <div className="flex w-full items-center gap-2 border-b border-amber-300 bg-transparent px-0 py-1.5 transition-colors hover:border-amber-400">
+	                  <div className="flex w-full items-center gap-2 border-b border-emerald-300 bg-transparent px-0 py-1.5 transition-colors hover:border-emerald-400">
 	                    <button
 	                      type="button"
 	                      onClick={() => {
@@ -1487,7 +1493,7 @@ export function Home({
 	                      className="flex min-w-0 flex-1 items-center justify-between gap-2 text-left"
 	                    >
 	                      <div className="flex min-w-0 items-center gap-2">
-	                        <span className="flex h-6 w-6 shrink-0 items-center justify-center text-yellow-900">
+	                        <span className="flex h-6 w-6 shrink-0 items-center justify-center text-sky-900">
 	                          <SlidersHorizontal className="h-3.5 w-3.5" />
 	                        </span>
 	                        <div className="min-w-0 text-left">
@@ -1504,7 +1510,7 @@ export function Home({
 	                          setSelectedCategory('Todas las categorías');
 	                          setIsCategoryMenuOpen(false);
 	                        }}
-	                        className="flex h-7 w-7 shrink-0 items-center justify-center text-yellow-900 transition-colors hover:text-yellow-950"
+	                        className="flex h-7 w-7 shrink-0 items-center justify-center text-sky-900 transition-colors hover:text-sky-950"
 	                        aria-label="Limpiar categoría"
 	                      >
 	                        <X className="h-3.5 w-3.5" />
@@ -1513,7 +1519,7 @@ export function Home({
 	                  </div>
 
                   {isCategoryMenuOpen && (
-                    <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 max-h-72 overflow-y-auto overscroll-contain rounded-xl border-2 border-amber-200 bg-white p-1.5 shadow-xl">
+                    <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 max-h-72 overflow-y-auto overscroll-contain rounded-xl border-2 border-emerald-200 bg-white p-1.5 shadow-xl">
                       {categories.map((category) => (
                         <button
                           key={category}
@@ -1524,8 +1530,8 @@ export function Home({
                           }}
                           className={`flex w-full items-center rounded-lg px-2.5 py-2 text-left text-sm font-bold transition-colors ${
                             selectedCategory === category
-                              ? 'bg-amber-100 text-yellow-950'
-                              : 'text-gray-800 hover:bg-amber-50'
+                              ? 'bg-emerald-50 text-sky-950'
+                              : 'text-gray-800 hover:bg-slate-50'
                           }`}
                         >
                           {category}
@@ -1537,7 +1543,7 @@ export function Home({
 
 	                {showsBrandFilter && (
 	                  <div className="relative min-w-0">
-	                    <div className="flex w-full items-center gap-2 border-b border-amber-300 bg-transparent px-0 py-1.5 transition-colors hover:border-amber-400">
+	                    <div className="flex w-full items-center gap-2 border-b border-emerald-300 bg-transparent px-0 py-1.5 transition-colors hover:border-emerald-400">
 	                      <button
 	                        type="button"
 	                        onClick={() => {
@@ -1547,7 +1553,7 @@ export function Home({
 	                        className="flex min-w-0 flex-1 items-center justify-between gap-2 text-left"
 	                      >
 	                        <div className="flex min-w-0 items-center gap-2">
-	                          <span className="flex h-6 w-6 shrink-0 items-center justify-center text-yellow-900">
+	                          <span className="flex h-6 w-6 shrink-0 items-center justify-center text-sky-900">
 	                            <Tag className="h-3.5 w-3.5" />
 	                          </span>
 	                          <div className="min-w-0 text-left">
@@ -1564,7 +1570,7 @@ export function Home({
 	                            setSelectedBrand('Todas las marcas');
 	                            setIsBrandMenuOpen(false);
 	                          }}
-	                          className="flex h-7 w-7 shrink-0 items-center justify-center text-yellow-900 transition-colors hover:text-yellow-950"
+	                          className="flex h-7 w-7 shrink-0 items-center justify-center text-sky-900 transition-colors hover:text-sky-950"
 	                          aria-label="Limpiar marca"
 	                        >
 	                          <X className="h-3.5 w-3.5" />
@@ -1573,7 +1579,7 @@ export function Home({
 	                    </div>
 
 	                    {isBrandMenuOpen && (
-	                      <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 max-h-72 overflow-y-auto overscroll-contain rounded-xl border-2 border-amber-200 bg-white p-1.5 shadow-xl">
+	                      <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 max-h-72 overflow-y-auto overscroll-contain rounded-xl border-2 border-emerald-200 bg-white p-1.5 shadow-xl">
 	                        {brands.map((brand) => (
 	                          <button
 	                            key={brand}
@@ -1584,8 +1590,8 @@ export function Home({
 	                            }}
 	                            className={`flex w-full items-center rounded-lg px-2.5 py-2 text-left text-sm font-bold transition-colors ${
 	                              selectedBrand === brand
-	                                ? 'bg-amber-100 text-yellow-950'
-	                                : 'text-gray-800 hover:bg-amber-50'
+	                                ? 'bg-emerald-50 text-sky-950'
+	                                : 'text-gray-800 hover:bg-slate-50'
 	                            }`}
 	                          >
 	                            {brand}
@@ -1600,15 +1606,15 @@ export function Home({
           </div>
         </div>
         {searchQuery && (
-          <div className="bg-amber-50 px-6 pb-4 pt-5">
-            <div className="bg-white border-2 border-amber-200 rounded-xl px-5 py-3 flex items-center justify-between gap-4 shadow-sm">
-              <span className="text-base font-bold text-yellow-900 truncate">
+          <div className="bg-slate-50 px-6 pb-4 pt-5">
+            <div className="bg-white border-2 border-emerald-200 rounded-xl px-5 py-3 flex items-center justify-between gap-4 shadow-sm">
+              <span className="text-base font-bold text-sky-900 truncate">
                 Categoría buscada: {searchQuery}
               </span>
               <button
                 type="button"
                 onClick={() => onSearchChange('')}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-yellow-900 transition-colors hover:bg-amber-200"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-sky-900 transition-colors hover:bg-emerald-200"
                 aria-label="Limpiar búsqueda"
               >
                 <X className="h-4 w-4" />
@@ -1623,10 +1629,10 @@ export function Home({
           <button
             type="button"
             onClick={onRepeatLastOrder}
-            className="flex w-full items-center justify-between gap-3 rounded-xl border border-amber-200 bg-white px-3 py-2 text-left shadow-sm transition-colors hover:border-yellow-700 hover:bg-amber-50 active:scale-[0.99]"
+            className="flex w-full items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-white px-3 py-2 text-left shadow-sm transition-colors hover:border-emerald-500 hover:bg-slate-50 active:scale-[0.99]"
           >
             <span className="flex min-w-0 items-center gap-2.5">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-yellow-800 text-white shadow-sm">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white shadow-sm">
                 <RotateCcw className="h-4 w-4" />
               </span>
               <span className="min-w-0">
@@ -1636,7 +1642,7 @@ export function Home({
                 </span>
               </span>
             </span>
-            <span className="shrink-0 rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-extrabold text-yellow-900">
+            <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-extrabold text-sky-900">
               Agregar
             </span>
           </button>
@@ -1651,7 +1657,7 @@ export function Home({
                 </span>
                 <h2 className="truncate text-lg font-extrabold text-gray-900">Listo en menos de 5 min</h2>
               </div>
-              <div className="h-px flex-1 bg-amber-200" />
+              <div className="h-px flex-1 bg-emerald-200" />
             </div>
 
             {quickProducts.map((product) => renderProductCard(product))}
@@ -1660,7 +1666,7 @@ export function Home({
 
         {selectedVenueLocations && (
           <div className="space-y-3">
-            <div className="overflow-hidden rounded-[1.75rem] border-2 border-amber-100 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-[1.75rem] border-2 border-emerald-100 bg-white shadow-sm">
               <div className="bg-[linear-gradient(135deg,#fff8dc_0%,#fffdf4_55%,#ffffff_100%)] px-4 py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
@@ -1670,13 +1676,13 @@ export function Home({
                         setSelectedVenueLocations(null);
                         setPendingPickupSelections([]);
                       }}
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-yellow-900 shadow-sm ring-1 ring-amber-100 transition-colors hover:bg-amber-50"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-900 shadow-sm ring-1 ring-emerald-100 transition-colors hover:bg-slate-50"
                       aria-label="Volver"
                     >
                       <ArrowLeft className="h-5 w-5" />
                     </button>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700">
                         {pendingPickupSelections.length ? 'Elegí dónde retirar' : `Ubicaciones de ${selectedVenueLocations}`}
                       </p>
                       <p className="mt-1 max-w-[14rem] text-sm font-medium leading-relaxed text-gray-500">
@@ -1686,7 +1692,7 @@ export function Home({
                       </p>
                     </div>
                   </div>
-                  <span className="flex h-11 w-12 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-amber-100">
+                  <span className="flex h-11 w-12 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-emerald-100">
                     {getVenueBadge(selectedVenueLocations)}
                   </span>
                 </div>
@@ -1696,10 +1702,10 @@ export function Home({
             {getGroupedVenueLocations(selectedVenueLocations).map(({ building, details }) => (
               <div
                 key={building}
-                className="rounded-[1.65rem] border-2 border-amber-100 bg-white px-4 py-4 shadow-sm"
+                className="rounded-[1.65rem] border-2 border-emerald-100 bg-white px-4 py-4 shadow-sm"
               >
                 <div className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-100/70 text-yellow-900">
+                  <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-50/70 text-sky-900">
                     <MapPin className="h-4.5 w-4.5" />
                   </span>
                   <div className="min-w-0 flex-1">
@@ -1719,14 +1725,14 @@ export function Home({
                             type="button"
                             onClick={() => handleSelectPickupLocation(location)}
                             disabled={!canUseLocation}
-                            className={`flex w-full items-center justify-between gap-3 rounded-2xl px-3 py-2 text-left transition-colors ${
+                            className={`flex w-full items-center justify-between gap-3 rounded-2xl border-2 px-3 py-2 text-left transition-all ${
                               !canUseLocation
-                                ? 'cursor-not-allowed bg-gray-100 text-gray-400 opacity-70'
+                                ? 'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400 opacity-70'
                                 : isSelectedLocation
-                                ? 'bg-green-600 text-white shadow-sm'
+                                ? 'border-emerald-600 bg-emerald-50 text-emerald-950 shadow-md hover:bg-emerald-100 hover:shadow-lg active:scale-[0.99]'
                                 : hasCartItemsAtLocation
-                                  ? 'bg-blue-50 text-blue-950 ring-2 ring-blue-200 hover:bg-blue-100'
-                                : 'bg-amber-50/70 hover:bg-amber-100'
+                                  ? 'border-blue-200 bg-blue-50 text-blue-950 hover:bg-blue-100'
+                                : 'border-transparent bg-slate-50/70 hover:border-emerald-200 hover:bg-emerald-50'
                             }`}
                           >
                             <span className="min-w-0">
@@ -1734,7 +1740,7 @@ export function Home({
                                 !canUseLocation
                                   ? 'text-gray-400'
                                   : isSelectedLocation
-                                  ? 'text-white'
+                                  ? 'text-emerald-950'
                                   : hasCartItemsAtLocation
                                     ? 'text-blue-950'
                                     : 'text-gray-700'
@@ -1743,7 +1749,7 @@ export function Home({
                                 !canUseLocation
                                   ? 'text-gray-400'
                                   : isSelectedLocation
-                                  ? 'text-green-50'
+                                  ? 'text-emerald-700'
                                   : hasCartItemsAtLocation
                                     ? 'text-blue-700'
                                     : 'text-gray-400'
@@ -1751,7 +1757,7 @@ export function Home({
                                 {!canUseLocation
                                   ? 'No disponible para este producto'
                                   : isSelectedLocation
-                                  ? 'Retiro seleccionado'
+                                  ? 'Retiro seleccionado · tocá para cambiar'
                                   : hasCartItemsAtLocation
                                     ? 'Ya tenés productos acá'
                                   : hasLimitedMenu
@@ -1763,10 +1769,10 @@ export function Home({
                               !canUseLocation
                                 ? 'text-gray-300'
                                 : isSelectedLocation
-                                ? 'text-white'
+                                ? 'text-emerald-700'
                                 : hasCartItemsAtLocation
                                   ? 'text-blue-700'
-                                  : 'text-yellow-900'
+                                  : 'text-sky-900'
                             }`} />
                           </button>
                         );
@@ -1786,11 +1792,11 @@ export function Home({
                 {getVenueBadge(venue)}
                 <h2 className="text-lg font-extrabold text-gray-900">{venue}</h2>
               </div>
-              <div className="h-px flex-1 bg-amber-200" />
+              <div className="h-px flex-1 bg-emerald-200" />
             </div>
 
             {products.length === 0 ? (
-              <div className="bg-white rounded-2xl border-2 border-amber-100 shadow-md p-5 text-center">
+              <div className="bg-white rounded-2xl border-2 border-emerald-100 shadow-md p-5 text-center">
                 <p className="font-medium text-gray-600">No hay destacados para mostrar en este momento.</p>
               </div>
             ) : (
@@ -1800,8 +1806,8 @@ export function Home({
         ))}
 
         {!selectedVenueLocations && !selectedVenue && featuredProductsByVenue.every(({ products }) => products.length === 0) && (
-          <div className="bg-white rounded-2xl border-2 border-amber-100 shadow-md p-6 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-yellow-900">
+          <div className="bg-white rounded-2xl border-2 border-emerald-100 shadow-md p-6 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-sky-900">
               <MapPin className="h-7 w-7" />
             </div>
             <h2 className="text-xl font-bold text-gray-900">Elegí un lugar</h2>
@@ -1817,7 +1823,7 @@ export function Home({
           <button
             type="button"
             onClick={() => setVisibleProductsCount((currentCount) => currentCount + 10)}
-            className="w-full rounded-xl border-2 border-amber-200 bg-white py-4 font-bold text-yellow-900 shadow-sm hover:border-yellow-700 hover:bg-amber-50 transition-colors"
+            className="w-full rounded-xl border-2 border-emerald-200 bg-white py-4 font-bold text-sky-900 shadow-sm hover:border-emerald-500 hover:bg-slate-50 transition-colors"
           >
             Ver más
           </button>
@@ -1840,7 +1846,7 @@ export function Home({
         <button
           type="button"
           onClick={handleBackToTop}
-          className="back-to-top-bounce fixed right-5 bottom-21 z-50 flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-black text-white shadow-[0_12px_28px_rgba(0,0,0,0.32)] ring-4 ring-amber-50/90 hover:bg-neutral-900 active:scale-95 transition-all"
+          className="back-to-top-bounce fixed right-5 bottom-21 z-50 flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-black text-white shadow-[0_12px_28px_rgba(0,0,0,0.32)] ring-4 ring-emerald-50/90 hover:bg-neutral-900 active:scale-95 transition-all"
           aria-label="Volver al inicio"
         >
           <ChevronUp className="w-6 h-6" />

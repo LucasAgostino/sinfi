@@ -1,12 +1,12 @@
-/* Toast customization for brown theme */
+/* Toast customization for SinFi theme */
 [data-sonner-toast][data-type="success"] {
-  background-color: rgb(254 252 232) !important;
-  border: 2px solid rgb(133 77 14) !important;
-  color: rgb(113 63 18) !important;
+  background-color: rgb(240 253 244) !important;
+  border: 2px solid rgb(5 150 105) !important;
+  color: rgb(6 78 59) !important;
 }
 
 [data-sonner-toast][data-type="success"] [data-icon] {
-  color: rgb(133 77 14) !important;
+  color: rgb(5 150 105) !important;
 }
 
 [data-sonner-toast][data-type="error"] {
@@ -67,10 +67,10 @@
   width: 14px;
   height: 14px;
   border-radius: 9999px;
-  background: rgb(133 77 14);
+  background: rgb(5 150 105);
   box-shadow:
-    0 0 0 4px rgb(254 243 199 / 0.85),
-    0 10px 18px rgb(120 53 15 / 0.28);
+    0 0 0 4px rgb(209 250 229 / 0.85),
+    0 10px 18px rgb(5 150 105 / 0.28);
   animation: cart-flight 720ms cubic-bezier(0.22, 0.72, 0.2, 1) forwards;
 }
 
@@ -81,15 +81,15 @@
   }
   15% {
     transform: translateX(-8px) scale(1.01);
-    box-shadow: 0 0 0 6px rgb(251 191 36 / 0.18);
+    box-shadow: 0 0 0 6px rgb(16 185 129 / 0.18);
   }
   30% {
     transform: translateX(7px) scale(1.01);
-    box-shadow: 0 0 0 5px rgb(251 191 36 / 0.16);
+    box-shadow: 0 0 0 5px rgb(16 185 129 / 0.16);
   }
   45% {
     transform: translateX(-5px) scale(1);
-    box-shadow: 0 0 0 3px rgb(251 191 36 / 0.12);
+    box-shadow: 0 0 0 3px rgb(16 185 129 / 0.12);
   }
   60% {
     transform: translateX(4px) scale(1);
