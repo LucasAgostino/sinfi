@@ -31,6 +31,27 @@ const getWaitTimeBarColor = (waitTimeMinutes: number) => {
   return 'bg-red-500';
 };
 
+const getPickupGroupLabel = (pickupLocation?: string) =>
+  pickupLocation?.trim() || 'Retiro sin definir';
+
+const getPickupVenueGroupLabel = (item: CartItem) =>
+  `${getPickupGroupLabel(item.pickupLocation)}, ${item.venue}`;
+
+const groupCartItemsByPickupLocation = (items: CartItem[]) =>
+  Array.from(
+    items.reduce((groups, item) => {
+      const pickupLabel = getPickupVenueGroupLabel(item);
+      const groupItems = groups.get(pickupLabel) ?? [];
+
+      groupItems.push(item);
+      groups.set(pickupLabel, groupItems);
+
+      return groups;
+    }, new Map<string, CartItem[]>()),
+  ).sort(([firstPickupLocation], [secondPickupLocation]) =>
+    firstPickupLocation.localeCompare(secondPickupLocation, 'es'),
+  );
+
 interface CartProps {
   items: CartItem[];
   lastOrderItems: CartItem[];
@@ -48,6 +69,7 @@ export function Cart({ items, lastOrderItems, onBack, onCheckout, onUpdateQuanti
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const lastOrderItemCount = lastOrderItems.reduce((sum, item) => sum + item.quantity, 0);
   const lastOrderTotal = lastOrderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const groupedCartItems = groupCartItemsByPickupLocation(items);
 
   useEffect(() => {
     if (!isClearCartModalOpen && !itemPendingRemoval) {
@@ -107,7 +129,27 @@ export function Cart({ items, lastOrderItems, onBack, onCheckout, onUpdateQuanti
           </div>
         ) : (
           <div className="space-y-3 max-w-2xl mx-auto">
-            {items.map((item) => (
+            {groupedCartItems.map(([pickupLocation, pickupItems]) => {
+              const pickupItemCount = pickupItems.reduce((sum, item) => sum + item.quantity, 0);
+              const pickupSubtotal = pickupItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+              return (
+                <section key={pickupLocation} className="space-y-3">
+                  <div className="rounded-xl border-2 border-emerald-100 bg-emerald-50 px-4 py-3 shadow-sm">
+                    <div className="flex items-start justify-between gap-2">
+                      <h2 className="min-w-0 text-[13px] font-extrabold leading-snug text-sky-950 sm:text-sm">
+                        Retiro en {pickupLocation}
+                      </h2>
+                      <span className="shrink-0 rounded-full bg-white px-2.5 py-1 text-[10px] font-extrabold leading-tight text-sky-900 shadow-sm sm:text-xs">
+                        {pickupItemCount} {pickupItemCount === 1 ? 'producto' : 'productos'} · ${pickupSubtotal.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  {pickupItems
+                    .slice()
+                    .sort((firstItem, secondItem) => firstItem.name.localeCompare(secondItem.name, 'es'))
+                    .map((item) => (
 	              <div key={item.cartKey ?? item.id} className="relative bg-white rounded-xl p-4 pr-12 shadow-md border-2 border-emerald-100">
 	                <div className="flex items-start gap-4">
                   <div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden bg-emerald-50 border-2 border-emerald-100 shadow-sm">
@@ -129,11 +171,6 @@ export function Cart({ items, lastOrderItems, onBack, onCheckout, onUpdateQuanti
 	                    <h3 className="line-clamp-2 break-words font-bold leading-tight text-gray-900">{formatMenuText(item.name)}</h3>
                     {item.selectedFlavor && (
                       <p className="mt-1 text-sm font-bold text-gray-600">Opción: {formatMenuText(item.selectedFlavor)}</p>
-                    )}
-                    {item.pickupLocation && (
-                      <p className="mt-1 text-xs font-extrabold uppercase tracking-[0.08em] text-sky-900">
-                        Retiro: {item.pickupLocation}
-                      </p>
                     )}
                     <p className="text-xl font-bold text-sky-900">${item.price}</p>
                     <div className="mt-2 space-y-1">
@@ -182,7 +219,10 @@ export function Cart({ items, lastOrderItems, onBack, onCheckout, onUpdateQuanti
                   </p>
                 </div>
               </div>
-            ))}
+                    ))}
+                </section>
+              );
+            })}
           </div>
         )}
       </div>
